@@ -1,5 +1,5 @@
 import { getAllSubscriptions } from '../../data/subscriptions.js';
-import { getDynamicRates, calculateMonthlyExpense, calculateYearlyExpense, getRecentPayments, getUpcomingRenewals, getExpenseByType, getExpenseByCategory } from '../../core/currency.js';
+import { getDynamicRates, calculateMonthlyExpense, calculateYearlyExpense, getRecentPayments, getUpcomingRenewals, getExpenseByType, getExpenseByCategory, calculatePeriodExpense } from '../../core/currency.js';
 import { getCurrentTimeInTimezone, MS_PER_DAY } from '../../core/time.js';
 
 async function handleDashboardStats(env, config) {
@@ -64,4 +64,51 @@ async function handleDashboardStats(env, config) {
   }
 }
 
-export { handleDashboardStats };
+async function handlePeriodStats(request, env, config) {
+  try {
+    const body = await request.json();
+    const { startDate, endDate } = body;
+
+    if (!startDate || !endDate) {
+      return new Response(
+        JSON.stringify({ success: false, message: '请提供起止日期' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime()) || start > end) {
+      return new Response(
+        JSON.stringify({ success: false, message: '日期格式无效或起始日期晚于结束日期' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const subscriptions = await getAllSubscriptions(env);
+    const rates = await getDynamicRates(env);
+    const timezone = 'UTC';
+    const result = calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: {
+          amount: result.amount,
+          count: result.count,
+          startDate,
+          endDate
+        }
+      }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error('获取时段统计失败:', error);
+    return new Response(
+      JSON.stringify({ success: false, message: '获取时段统计失败: ' + error.message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
+
+export { handleDashboardStats, handlePeriodStats };

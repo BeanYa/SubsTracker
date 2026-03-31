@@ -179,6 +179,25 @@ function getUpcomingRenewals(subscriptions, timezone, rates) {
     .sort((a, b) => a.daysUntilRenewal - b.daysUntilRenewal);
 }
 
+function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate) {
+  const start = new Date(startDate + 'T00:00:00');
+  const end = new Date(endDate + 'T23:59:59');
+  let amount = 0;
+  let count = 0;
+  subscriptions.forEach(sub => {
+    const paymentHistory = sub.paymentHistory || [];
+    paymentHistory.forEach(payment => {
+      if (!payment.amount || payment.amount <= 0) return;
+      const paymentDate = new Date(payment.date);
+      if (paymentDate >= start && paymentDate <= end) {
+        amount += convertToCNY(payment.amount, sub.currency, rates);
+        count++;
+      }
+    });
+  });
+  return { amount, count };
+}
+
 function getExpenseByType(subscriptions, timezone, rates) {
   const now = getCurrentTimeInTimezone(timezone);
   const parts = getTimezoneDateParts(now, timezone);
@@ -253,5 +272,6 @@ export {
   getRecentPayments,
   getUpcomingRenewals,
   getExpenseByType,
-  getExpenseByCategory
+  getExpenseByCategory,
+  calculatePeriodExpense
 };
