@@ -1,6 +1,7 @@
 
 <style>
   /* === 全局暗黑模式核心变量与覆盖 === */
+  html { color-scheme: light dark; }
   :root {
     --dark-bg-primary: #111827;   /* 深灰/黑背景 */
     --dark-bg-secondary: #1f2937; /* 卡片/容器背景 */
@@ -12,8 +13,8 @@
   html.dark .bg-white { background-color: var(--dark-bg-secondary) !important; color: var(--dark-text-main); }
   html.dark .bg-gray-50 { background-color: var(--dark-bg-primary) !important; }
   html.dark .bg-gray-100 { background-color: var(--dark-border) !important; }
-  html.dark .shadow-md, html.dark .shadow-lg, html.dark .shadow-xl { 
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3); 
+  html.dark .shadow-md, html.dark .shadow-lg, html.dark .shadow-xl {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   }
   html.dark .text-gray-900, html.dark .text-gray-800 { color: var(--dark-text-main) !important; }
   html.dark .text-gray-700 { color: #d1d5db !important; }
@@ -77,18 +78,23 @@
   html.dark .hover-text:hover, html.dark .notes-text:hover { color: #93c5fd; }
 
   /* === 统一按钮样式 tokens === */
-  .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25); }
+  .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25); }
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(99, 102, 241, 0.35); }
-  .btn-secondary { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(107, 114, 128, 0.25); }
+  .btn-secondary { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(107, 114, 128, 0.25); }
   .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(107, 114, 128, 0.35); }
-  .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25); }
+  .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25); }
   .btn-success:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(16, 185, 129, 0.35); }
-  .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25); }
+  .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25); }
   .btn-warning:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(245, 158, 11, 0.35); }
-  .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25); }
+  .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25); }
   .btn-danger:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(239, 68, 68, 0.35); }
-  .btn-info { background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); transition: all 0.2s; box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25); }
+  .btn-info { background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%); transition: box-shadow 0.2s, transform 0.2s; box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25); }
   .btn-info:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary:hover, .btn-secondary:hover, .btn-success:hover,
+    .btn-warning:hover, .btn-danger:hover, .btn-info:hover { transform: none; }
+  }
 
   @media (max-width: 767px) {   /* === 移动端表格样式(高对比度版) === */
     html.dark .responsive-table td:before {  /* 强制提亮移动端表格的 Label */
@@ -103,11 +109,11 @@
       background-color: #1f2937 !important;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; /* 阴影稍微加深 */
     }
-    
+
     html.dark .responsive-table td {
       border-bottom-color: #374151 !important;
     }
-    
+
     html.dark .td-content-wrapper {
         color: #f3f4f6;
     }
