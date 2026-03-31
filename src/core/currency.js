@@ -183,22 +183,26 @@ function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDa
   const start = new Date(startDate);
   const end = new Date(endDate);
   end.setHours(23, 59, 59, 999);
-  const items = [];
-  let total = 0;
+  const subMap = {};
   subscriptions.forEach(sub => {
-    if (!sub.isActive || !sub.amount || sub.amount <= 0) return;
-    const subStart = sub.startDate ? new Date(sub.startDate) : null;
-    const subExpiry = new Date(sub.expiryDate);
-    if (subStart && subStart > end) return;
-    if (subExpiry < start) return;
-    const amountCNY = convertToCNY(sub.amount, sub.currency, rates);
-    items.push({
-      name: sub.name,
-      amountCNY,
-      customType: sub.customType || '未分类'
+    (sub.paymentHistory || []).forEach(payment => {
+      if (!payment.amount || payment.amount <= 0) return;
+      const paymentDate = new Date(payment.date);
+      if (paymentDate >= start && paymentDate <= end) {
+        const amountCNY = convertToCNY(payment.amount, sub.currency, rates);
+        if (!subMap[sub.id]) {
+          subMap[sub.id] = {
+            name: sub.name,
+            amountCNY: 0,
+            customType: sub.customType || '未分类'
+          };
+        }
+        subMap[sub.id].amountCNY += amountCNY;
+      }
     });
-    total += amountCNY;
   });
+  const items = Object.values(subMap);
+  const total = items.reduce((sum, i) => sum + i.amountCNY, 0);
   return { total, items };
 }
 
