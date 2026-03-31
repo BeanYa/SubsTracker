@@ -211,7 +211,7 @@
           <i class="fas fa-calendar-check text-blue-500"></i>
           <h3 class="text-lg font-medium text-gray-900">最近支付</h3>
         </div>
-        <span class="badge">过去7天</span>
+        <span class="badge">过去7天 · 折合CNY</span>
       </div>
       <div class="p-6" id="recentPayments">
         <div class="loading-skeleton"></div>
@@ -224,7 +224,7 @@
           <i class="fas fa-clock text-yellow-500"></i>
           <h3 class="text-lg font-medium text-gray-900">即将续费</h3>
         </div>
-        <span class="badge">未来7天</span>
+        <span class="badge">未来7天 · 折合CNY</span>
       </div>
       <div class="p-6" id="upcomingRenewals">
         <div class="loading-skeleton"></div>
@@ -434,10 +434,10 @@
                 ${s.customType?`<span class="list-item-badge">${s.customType}</span>`:''}
               </div>
             </div>
-            <div class="list-item-amount">${getSymbol(s.currency)}${(s.amount||0).toFixed(2)}</div>
+            <div class="list-item-amount">¥${(s.amountCNY||0).toFixed(2)}${s.currency!=='CNY'?`<div style="font-size:0.75rem;color:var(--color-text-muted);font-weight:400">≈ ${getSymbol(s.currency)}${(s.amount||0).toFixed(2)}</div>`:''}</div>
           </div>
         `).join('');
-        
+
         const ur=document.getElementById('upcomingRenewals');
         ur.innerHTML=data.upcomingRenewals.length===0?'<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">未来7天内没有即将续费的订阅</div></div>':
         data.upcomingRenewals.map(s=>`
@@ -450,10 +450,10 @@
                 ${s.customType?`<span class="list-item-badge">${s.customType}</span>`:''}
               </div>
             </div>
-            <div class="list-item-amount">${getSymbol(s.currency)}${(s.amount||0).toFixed(2)}</div>
+            <div class="list-item-amount">¥${(s.amountCNY||0).toFixed(2)}${s.currency!=='CNY'?`<div style="font-size:0.75rem;color:var(--color-text-muted);font-weight:400">≈ ${getSymbol(s.currency)}${(s.amount||0).toFixed(2)}</div>`:''}</div>
           </div>
         `).join('');
-        
+
         const et=document.getElementById('expenseByType');
         et.innerHTML=data.expenseByType.length===0?'<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">暂无支出数据</div></div>':
         data.expenseByType.map((item,i)=>`

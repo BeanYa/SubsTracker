@@ -126,7 +126,7 @@ function calculateYearlyExpense(subscriptions, timezone, rates) {
   return { amount, monthlyAverage };
 }
 
-function getRecentPayments(subscriptions, timezone) {
+function getRecentPayments(subscriptions, timezone, rates) {
   const now = getCurrentTimeInTimezone(timezone);
   const sevenDaysAgo = new Date(now.getTime() - 7 * MS_PER_DAY);
   const recentPayments = [];
@@ -136,10 +136,12 @@ function getRecentPayments(subscriptions, timezone) {
       if (!payment.amount || payment.amount <= 0) return;
       const paymentDate = new Date(payment.date);
       if (paymentDate >= sevenDaysAgo && paymentDate <= now) {
+        const currency = sub.currency || 'CNY';
         recentPayments.push({
           name: sub.name,
           amount: payment.amount,
-          currency: sub.currency || 'CNY',
+          currency,
+          amountCNY: convertToCNY(payment.amount, currency, rates),
           customType: sub.customType,
           paymentDate: payment.date,
           note: payment.note
@@ -150,7 +152,7 @@ function getRecentPayments(subscriptions, timezone) {
   return recentPayments.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
 }
 
-function getUpcomingRenewals(subscriptions, timezone) {
+function getUpcomingRenewals(subscriptions, timezone, rates) {
   const now = getCurrentTimeInTimezone(timezone);
   const sevenDaysLater = new Date(now.getTime() + 7 * MS_PER_DAY);
   return subscriptions
@@ -162,10 +164,13 @@ function getUpcomingRenewals(subscriptions, timezone) {
     .map(sub => {
       const renewalDate = new Date(sub.expiryDate);
       const daysUntilRenewal = Math.ceil((renewalDate - now) / MS_PER_DAY);
+      const currency = sub.currency || 'CNY';
+      const amount = sub.amount || 0;
       return {
         name: sub.name,
-        amount: sub.amount || 0,
-        currency: sub.currency || 'CNY',
+        amount,
+        currency,
+        amountCNY: convertToCNY(amount, currency, rates),
         customType: sub.customType,
         renewalDate: sub.expiryDate,
         daysUntilRenewal

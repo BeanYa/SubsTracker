@@ -21,8 +21,8 @@ async function handleDashboardStats(env, config) {
     const rates = await getDynamicRates(env);
     const monthlyExpense = calculateMonthlyExpense(subscriptions, timezone, rates);
     const yearlyExpense = calculateYearlyExpense(subscriptions, timezone, rates);
-    const recentPayments = getRecentPayments(subscriptions, timezone);
-    const upcomingRenewals = getUpcomingRenewals(subscriptions, timezone);
+    const recentPayments = getRecentPayments(subscriptions, timezone, rates);
+    const upcomingRenewals = getUpcomingRenewals(subscriptions, timezone, rates);
     const expenseByType = getExpenseByType(subscriptions, timezone, rates);
     const expenseByCategory = getExpenseByCategory(subscriptions, timezone, rates);
 
