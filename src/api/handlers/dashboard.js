@@ -94,8 +94,8 @@ async function handlePeriodStats(request, env, config) {
       JSON.stringify({
         success: true,
         data: {
-          amount: result.amount,
-          count: result.count,
+          total: result.total,
+          items: result.items,
           startDate,
           endDate
         }

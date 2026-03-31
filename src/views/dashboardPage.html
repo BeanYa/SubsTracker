@@ -6,6 +6,7 @@
   <title>仪表盘 - SubsTracker</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   ${themeResources}  <style>
     /* === 统计卡片样式 === */
     .stat-card{
@@ -546,31 +547,41 @@
     setInterval(loadDashboardData, 60000);
 
     // --- 时段花费统计 ---
+    const PIE_COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#14b8a6','#f97316','#64748b'];
+    let periodChart = null;
+
     function getPeriodRange(period) {
       const now = new Date();
-      const y = now.getFullYear();
-      const m = now.getMonth();
-      const d = now.getDate();
       const pad = n => String(n).padStart(2, '0');
       const fmt = dt => `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+      const today = fmt(now);
 
       switch (period) {
         case 'day':
-          return { start: fmt(now), end: fmt(now) };
+          return { start: today, end: today };
         case 'week': {
-          const day = now.getDay() || 7;
-          const monday = new Date(y, m, d - day + 1);
-          const sunday = new Date(y, m, d - day + 7);
-          return { start: fmt(monday), end: fmt(sunday) };
+          const ago = new Date(now);
+          ago.setDate(ago.getDate() - 6);
+          return { start: fmt(ago), end: today };
         }
-        case 'month':
-          return { start: `${y}-${pad(m+1)}-01`, end: `${y}-${pad(m+1)}-${pad(new Date(y, m+1, 0).getDate())}` };
+        case 'month': {
+          const ago = new Date(now);
+          ago.setMonth(ago.getMonth() - 1);
+          ago.setDate(ago.getDate() + 1);
+          return { start: fmt(ago), end: today };
+        }
         case 'quarter': {
-          const qStart = Math.floor(m / 3) * 3;
-          return { start: `${y}-${pad(qStart+1)}-01`, end: `${y}-${pad(qStart+3)}-${pad(new Date(y, qStart+3, 0).getDate())}` };
+          const ago = new Date(now);
+          ago.setMonth(ago.getMonth() - 3);
+          ago.setDate(ago.getDate() + 1);
+          return { start: fmt(ago), end: today };
         }
-        case 'year':
-          return { start: `${y}-01-01`, end: `${y}-12-31` };
+        case 'year': {
+          const ago = new Date(now);
+          ago.setFullYear(ago.getFullYear() - 1);
+          ago.setDate(ago.getDate() + 1);
+          return { start: fmt(ago), end: today };
+        }
         default:
           return null;
       }
@@ -587,11 +598,67 @@
         });
         const d = await r.json();
         if (!d.success) throw new Error(d.message);
-        const { amount, count } = d.data;
+        const { total, items } = d.data;
+
+        if (items.length === 0) {
+          el.innerHTML = '<div class="empty-state" style="padding:1rem"><div class="empty-state-text">该时段内无生效订阅</div></div>';
+          return;
+        }
+
         el.innerHTML = `
-          <div class="period-amount">¥${amount.toFixed(2)}</div>
-          <div class="period-subtitle">共 ${count} 笔支付 · ${start} ~ ${end}</div>
+          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+            <div style="flex-shrink:0;text-align:center;min-width:160px">
+              <div class="period-amount" style="font-size:1.75rem">¥${total.toFixed(2)}</div>
+              <div class="period-subtitle">${start} ~ ${end}</div>
+              <div class="period-subtitle" style="margin-top:0.25rem">共 ${items.length} 项生效订阅</div>
+            </div>
+            <div style="flex:1;min-width:200px;max-width:280px;margin:0 auto">
+              <canvas id="periodPieChart"></canvas>
+            </div>
+            <div style="flex:1;min-width:200px" id="periodLegend"></div>
+          </div>
         `;
+
+        const sorted = [...items].sort((a, b) => b.amountCNY - a.amountCNY);
+        const ctx = document.getElementById('periodPieChart').getContext('2d');
+        if (periodChart) periodChart.destroy();
+        periodChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: sorted.map(i => i.name),
+            datasets: [{
+              data: sorted.map(i => i.amountCNY),
+              backgroundColor: sorted.map((_, i) => PIE_COLORS[i % PIE_COLORS.length]),
+              borderWidth: 2,
+              borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `¥${ctx.parsed.toFixed(2)} (${(ctx.parsed / total * 100).toFixed(1)}%)`
+                }
+              }
+            },
+            cutout: '55%'
+          }
+        });
+
+        const legendEl = document.getElementById('periodLegend');
+        legendEl.innerHTML = sorted.map((item, i) => {
+          const pct = total > 0 ? (item.amountCNY / total * 100).toFixed(1) : 0;
+          return `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;font-size:0.8125rem">
+            <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
+            <span style="flex:1;color:var(--color-text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.name}</span>
+            <span style="color:var(--color-text-muted);white-space:nowrap">¥${item.amountCNY.toFixed(2)}</span>
+            <span style="color:var(--color-primary);font-weight:600;min-width:40px;text-align:right">${pct}%</span>
+          </div>`;
+        }).join('');
+
       } catch (e) {
         el.innerHTML = `<div class="empty-state" style="padding:1rem"><div class="empty-state-text">查询失败: ${e.message}</div></div>`;
       }

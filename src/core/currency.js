@@ -182,20 +182,23 @@ function getUpcomingRenewals(subscriptions, timezone, rates) {
 function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate) {
   const start = new Date(startDate + 'T00:00:00');
   const end = new Date(endDate + 'T23:59:59');
-  let amount = 0;
-  let count = 0;
+  const items = [];
+  let total = 0;
   subscriptions.forEach(sub => {
-    const paymentHistory = sub.paymentHistory || [];
-    paymentHistory.forEach(payment => {
-      if (!payment.amount || payment.amount <= 0) return;
-      const paymentDate = new Date(payment.date);
-      if (paymentDate >= start && paymentDate <= end) {
-        amount += convertToCNY(payment.amount, sub.currency, rates);
-        count++;
-      }
+    if (!sub.isActive || !sub.amount || sub.amount <= 0) return;
+    const subStart = sub.startDate ? new Date(sub.startDate + 'T00:00:00') : null;
+    const subExpiry = new Date(sub.expiryDate + 'T23:59:59');
+    if (subStart && subStart > end) return;
+    if (subExpiry < start) return;
+    const amountCNY = convertToCNY(sub.amount, sub.currency, rates);
+    items.push({
+      name: sub.name,
+      amountCNY,
+      customType: sub.customType || '未分类'
     });
+    total += amountCNY;
   });
-  return { amount, count };
+  return { total, items };
 }
 
 function getExpenseByType(subscriptions, timezone, rates) {
