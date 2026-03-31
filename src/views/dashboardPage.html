@@ -101,6 +101,14 @@
     html.dark .custom-range input[type="date"]{background:var(--dark-bg-tertiary);border-color:var(--dark-border);color:var(--dark-text-main)}
     .custom-range-btn{padding:0.375rem 1rem;border-radius:8px;font-size:0.875rem;font-weight:600;background:#6366f1;color:#fff;border:none;cursor:pointer;transition:opacity 0.2s}
     .custom-range-btn:hover{opacity:0.85}
+    .legend-row{display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;font-size:0.8125rem}
+    .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .legend-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text)}
+    .legend-amount{white-space:nowrap;color:var(--color-text-muted)}
+    .legend-pct{font-weight:600;min-width:40px;text-align:right;color:var(--color-primary)}
+    html.dark .legend-name{color:var(--dark-text-main)}
+    html.dark .legend-amount{color:var(--dark-text-muted)}
+    html.dark .legend-pct{color:var(--color-primary-light,#a5b4fc)}
     /* === Dashboard 暗黑模式修复 === */
     html.dark .stat-card {
       background: rgba(30, 41, 59, 0.6);
@@ -651,11 +659,11 @@
         const legendEl = document.getElementById('periodLegend');
         legendEl.innerHTML = sorted.map((item, i) => {
           const pct = total > 0 ? (item.amountCNY / total * 100).toFixed(1) : 0;
-          return `<div style="display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;font-size:0.8125rem">
-            <span style="width:10px;height:10px;border-radius:50%;flex-shrink:0;background:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
-            <span style="flex:1;color:var(--color-text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.name}</span>
-            <span style="color:var(--color-text-muted);white-space:nowrap">¥${item.amountCNY.toFixed(2)}</span>
-            <span style="color:var(--color-primary);font-weight:600;min-width:40px;text-align:right">${pct}%</span>
+          return `<div class="legend-row">
+            <span class="legend-dot" style="background:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
+            <span class="legend-name">${item.name}</span>
+            <span class="legend-amount">¥${item.amountCNY.toFixed(2)}</span>
+            <span class="legend-pct">${pct}%</span>
           </div>`;
         }).join('');
 

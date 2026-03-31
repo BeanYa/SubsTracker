@@ -180,14 +180,15 @@ function getUpcomingRenewals(subscriptions, timezone, rates) {
 }
 
 function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate) {
-  const start = new Date(startDate + 'T00:00:00');
-  const end = new Date(endDate + 'T23:59:59');
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
   const items = [];
   let total = 0;
   subscriptions.forEach(sub => {
     if (!sub.isActive || !sub.amount || sub.amount <= 0) return;
-    const subStart = sub.startDate ? new Date(sub.startDate + 'T00:00:00') : null;
-    const subExpiry = new Date(sub.expiryDate + 'T23:59:59');
+    const subStart = sub.startDate ? new Date(sub.startDate) : null;
+    const subExpiry = new Date(sub.expiryDate);
     if (subStart && subStart > end) return;
     if (subExpiry < start) return;
     const amountCNY = convertToCNY(sub.amount, sub.currency, rates);
