@@ -183,16 +183,22 @@ function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDa
   const rangeStart = new Date(startDate);
   const rangeEnd = new Date(endDate);
   rangeEnd.setHours(23, 59, 59, 999);
+  const MS_PER_DAY = 86400000;
   const subMap = {};
   subscriptions.forEach(sub => {
     (sub.paymentHistory || []).forEach(payment => {
       if (!payment.amount || payment.amount <= 0) return;
-      // Use periodStart/periodEnd for coverage matching; fall back to payment date
       const pStart = payment.periodStart ? new Date(payment.periodStart) : new Date(payment.date);
       const pEnd = payment.periodEnd ? new Date(payment.periodEnd) : new Date(payment.date);
-      // Payment covers the period if its coverage overlaps the query range
+      // Check overlap: subscription period must intersect query range
       if (pStart <= rangeEnd && pEnd >= rangeStart) {
-        const amountCNY = convertToCNY(payment.amount, sub.currency, rates);
+        // Prorate: amount × (overlap days / subscription period days)
+        const periodDays = Math.max((pEnd - pStart) / MS_PER_DAY, 1);
+        const overlapStart = pStart > rangeStart ? pStart : rangeStart;
+        const overlapEnd = pEnd < rangeEnd ? pEnd : rangeEnd;
+        const overlapDays = Math.max((overlapEnd - overlapStart) / MS_PER_DAY, 1);
+        const prorated = payment.amount * (overlapDays / periodDays);
+        const amountCNY = convertToCNY(prorated, sub.currency, rates);
         if (!subMap[sub.id]) {
           subMap[sub.id] = {
             name: sub.name,
