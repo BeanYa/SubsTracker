@@ -111,10 +111,26 @@
     /* === 输入框增强 === */
     .form-input {
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      color: #1f2937;
+    }
+    html.dark .form-input {
+      color: #f9fafb;
     }
     html.dark .form-input:focus {
       border-color: var(--color-primary) !important;
       box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15) !important;
+    }
+
+    /* === 配置区块内输入框文字颜色（确保浅色模式下可见）=== */
+    .config-section input,
+    .config-section select,
+    .config-section textarea {
+      color: #1f2937 !important;
+    }
+    html.dark .config-section input,
+    html.dark .config-section select,
+    html.dark .config-section textarea {
+      color: #f9fafb !important;
     }
 
     /* === 配置卡片头部 === */
