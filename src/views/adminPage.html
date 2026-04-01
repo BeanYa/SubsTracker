@@ -14,6 +14,37 @@
     .error-message { font-size: 0.875rem; margin-top: 0.25rem; display: none; }
     .error-message.show { display: block; }
 
+    /* === 统一操作按钮样式 === */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+    .action-btn:active { transform: scale(0.97); }
+    .action-btn-primary { background-color: #6366f1; }
+    .action-btn-primary:hover { background-color: #4f46e5; }
+    .action-btn-info { background-color: #0ea5e9; }
+    .action-btn-info:hover { background-color: #0284c7; }
+    .action-btn-success { background-color: #22c55e; }
+    .action-btn-success:hover { background-color: #16a34a; }
+    .action-btn-danger { background-color: #ef4444; }
+    .action-btn-danger:hover { background-color: #dc2626; }
+    .action-btn-warning { background-color: #f59e0b; }
+    .action-btn-warning:hover { background-color: #d97706; }
+    .action-btn-purple { background-color: #a855f7; }
+    .action-btn-purple:hover { background-color: #9333ea; }
+    html.dark .action-btn { opacity: 0.85; }
+    html.dark .action-btn:hover { opacity: 1; }
+
     /* 通用悬浮提示优化 */
     .hover-container {
       position: relative;
@@ -1542,14 +1573,14 @@ const lunarBiz = {
           '<td data-label="状态" class="px-4 py-3"><div class="td-content-wrapper">' + statusHtml + '</div></td>' +
           '<td data-label="操作" class="px-4 py-3">' +
             '<div class="action-buttons-wrapper">' +
-              '<button class="edit btn-primary text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '"><i class="fas fa-edit mr-1"></i>编辑</button>' +
-              '<button class="view-history bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '" title="查看支付历史"><i class="fas fa-history mr-1"></i>历史</button>' +
-              '<button class="test-notify btn-info text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '"><i class="fas fa-paper-plane mr-1"></i>测试</button>' +
-              '<button class="renew-now btn-success text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '" title="立即续订一个周期"><i class="fas fa-sync-alt mr-1"></i>续订</button>' +
-              '<button class="delete btn-danger text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '"><i class="fas fa-trash-alt mr-1"></i>删除</button>' +
+              '<button class="edit action-btn action-btn-primary" data-id="' + subscription.id + '"><i class="fas fa-edit"></i>编辑</button>' +
+              '<button class="view-history action-btn action-btn-purple" data-id="' + subscription.id + '" title="查看支付历史"><i class="fas fa-history"></i>历史</button>' +
+              '<button class="test-notify action-btn action-btn-info" data-id="' + subscription.id + '"><i class="fas fa-paper-plane"></i>测试</button>' +
+              '<button class="renew-now action-btn action-btn-success" data-id="' + subscription.id + '" title="立即续订一个周期"><i class="fas fa-sync-alt"></i>续订</button>' +
+              '<button class="delete action-btn action-btn-danger" data-id="' + subscription.id + '"><i class="fas fa-trash-alt"></i>删除</button>' +
               (subscription.isActive
-                ? '<button class="toggle-status btn-warning text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '" data-action="deactivate"><i class="fas fa-pause-circle mr-1"></i>停用</button>'
-                : '<button class="toggle-status btn-success text-white px-2 py-1 rounded text-xs whitespace-nowrap" data-id="' + subscription.id + '" data-action="activate"><i class="fas fa-play-circle mr-1"></i>启用</button>') +
+                ? '<button class="toggle-status action-btn action-btn-warning" data-id="' + subscription.id + '" data-action="deactivate"><i class="fas fa-pause-circle"></i>停用</button>'
+                : '<button class="toggle-status action-btn action-btn-success" data-id="' + subscription.id + '" data-action="activate"><i class="fas fa-play-circle"></i>启用</button>') +
             '</div>' +
           '</td>';
 
