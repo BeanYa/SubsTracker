@@ -179,38 +179,28 @@ function getUpcomingRenewals(subscriptions, timezone, rates) {
     .sort((a, b) => a.daysUntilRenewal - b.daysUntilRenewal);
 }
 
-function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate) {
-  const rangeStart = new Date(startDate);
-  const rangeEnd = new Date(endDate);
-  rangeEnd.setHours(23, 59, 59, 999);
-  const MS_PER_DAY = 86400000;
-  const subMap = {};
+function getActiveSubscriptionsBreakdown(subscriptions, rates) {
+  const items = [];
   subscriptions.forEach(sub => {
-    (sub.paymentHistory || []).forEach(payment => {
-      if (!payment.amount || payment.amount <= 0) return;
-      const pStart = payment.periodStart ? new Date(payment.periodStart) : new Date(payment.date);
-      const pEnd = payment.periodEnd ? new Date(payment.periodEnd) : new Date(payment.date);
-      // Check overlap: subscription period must intersect query range
-      if (pStart <= rangeEnd && pEnd >= rangeStart) {
-        // Prorate: amount × (overlap days / subscription period days)
-        const periodDays = Math.max((pEnd - pStart) / MS_PER_DAY, 1);
-        const overlapStart = pStart > rangeStart ? pStart : rangeStart;
-        const overlapEnd = pEnd < rangeEnd ? pEnd : rangeEnd;
-        const overlapDays = Math.max((overlapEnd - overlapStart) / MS_PER_DAY, 1);
-        const prorated = payment.amount * (overlapDays / periodDays);
-        const amountCNY = convertToCNY(prorated, sub.currency, rates);
-        if (!subMap[sub.id]) {
-          subMap[sub.id] = {
-            name: sub.name,
-            amountCNY: 0,
-            customType: sub.customType || '未分类'
-          };
-        }
-        subMap[sub.id].amountCNY += amountCNY;
-      }
+    if (!sub.isActive) return;
+    const lastPayment = (sub.paymentHistory || [])
+      .filter(p => p.amount && p.amount > 0)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    if (!lastPayment) return;
+    // Normalize to monthly cost
+    const periodValue = sub.periodValue || 1;
+    const periodUnit = sub.periodUnit || 'month';
+    let monthlyCost = lastPayment.amount;
+    if (periodUnit === 'day') monthlyCost = lastPayment.amount * 30;
+    else if (periodUnit === 'month') monthlyCost = lastPayment.amount / periodValue;
+    else if (periodUnit === 'year') monthlyCost = lastPayment.amount / (periodValue * 12);
+    const amountCNY = convertToCNY(monthlyCost, sub.currency, rates);
+    items.push({
+      name: sub.name,
+      amountCNY,
+      customType: sub.customType || '未分类'
     });
   });
-  const items = Object.values(subMap);
   const total = items.reduce((sum, i) => sum + i.amountCNY, 0);
   return { total, items };
 }
@@ -290,5 +280,5 @@ export {
   getUpcomingRenewals,
   getExpenseByType,
   getExpenseByCategory,
-  calculatePeriodExpense
+  getActiveSubscriptionsBreakdown
 };

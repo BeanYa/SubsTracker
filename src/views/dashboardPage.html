@@ -83,24 +83,11 @@
     .empty-state{text-align:center;padding:3rem 1rem;color:var(--color-text-muted)}
     .empty-state-icon{font-size:3.5rem;margin-bottom:1rem;opacity:0.4}
     .empty-state-text{font-size:0.9375rem}
-    /* === 时段花费统计卡片 === */
-    .period-tabs{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
-    .period-tab{padding:0.375rem 0.875rem;border-radius:20px;font-size:0.8125rem;font-weight:600;cursor:pointer;border:1px solid var(--color-border);background:transparent;color:var(--color-text-muted);transition:all 0.2s ease}
-    .period-tab:hover{border-color:#6366f1;color:#6366f1;background:rgba(99,102,241,0.05)}
-    .period-tab.active{background:#6366f1;color:#fff;border-color:#6366f1;box-shadow:0 2px 8px rgba(99,102,241,0.3)}
-    html.dark .period-tab{border-color:var(--dark-border);color:var(--dark-text-muted)}
-    html.dark .period-tab:hover{border-color:#818cf8;color:#a5b4fc;background:rgba(99,102,241,0.1)}
-    html.dark .period-tab.active{background:#6366f1;color:#fff;border-color:#6366f1}
+    /* === 订阅花费构成卡片 === */
     .period-amount{font-size:2.5rem;font-weight:800;color:var(--color-text);font-family:var(--font-display);letter-spacing:-0.02em;margin-bottom:0.25rem}
     html.dark .period-amount{color:var(--dark-text-main)}
     .period-subtitle{font-size:0.875rem;color:var(--color-text-subtle)}
     html.dark .period-subtitle{color:var(--dark-text-subtle)}
-    .custom-range{display:none;align-items:center;gap:0.75rem;margin-top:1rem;flex-wrap:wrap}
-    .custom-range.show{display:flex}
-    .custom-range input[type="date"]{padding:0.375rem 0.75rem;border:1px solid var(--color-border);border-radius:8px;font-size:0.875rem;color:var(--color-text);background:var(--color-bg,#fff)}
-    html.dark .custom-range input[type="date"]{background:var(--dark-bg-tertiary);border-color:var(--dark-border);color:var(--dark-text-main)}
-    .custom-range-btn{padding:0.375rem 1rem;border-radius:8px;font-size:0.875rem;font-weight:600;background:#6366f1;color:#fff;border:none;cursor:pointer;transition:opacity 0.2s}
-    .custom-range-btn:hover{opacity:0.85}
     .legend-row{display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;font-size:0.8125rem}
     .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
     .legend-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text)}
@@ -236,28 +223,12 @@
       <div class="panel-header">
         <div class="panel-title">
           <i class="fas fa-coins text-emerald-500"></i>
-          <h3 class="text-lg font-medium text-gray-900">时段花费统计</h3>
+          <h3 class="text-lg font-medium text-gray-900">订阅花费构成</h3>
         </div>
-        <span class="badge">折合CNY</span>
+        <span class="badge">生效订阅 · 月均CNY</span>
       </div>
-      <div class="p-6">
-        <div class="period-tabs">
-          <button class="period-tab" data-period="day">当日</button>
-          <button class="period-tab" data-period="week">当周</button>
-          <button class="period-tab active" data-period="month">当月</button>
-          <button class="period-tab" data-period="quarter">当季</button>
-          <button class="period-tab" data-period="year">当年</button>
-          <button class="period-tab" data-period="custom">自定义</button>
-        </div>
-        <div id="periodResult">
-          <div class="loading-skeleton" style="height:80px"></div>
-        </div>
-        <div class="custom-range" id="customRange">
-          <input type="date" id="periodStart" aria-label="起始日期">
-          <span style="color:var(--color-text-muted)">~</span>
-          <input type="date" id="periodEnd" aria-label="结束日期">
-          <button class="custom-range-btn" id="customRangeBtn">查询</button>
-        </div>
+      <div class="p-6" id="activeSubsBreakdown">
+        <div class="loading-skeleton" style="height:80px"></div>
       </div>
     </div>
 
@@ -543,6 +514,11 @@
             </div>
           </div>
         `).join('');
+
+        // 渲染生效订阅花费饼图
+        if (data.activeSubsBreakdown) {
+          renderActiveSubsBreakdown(data.activeSubsBreakdown);
+        }
       } catch(e){
         console.error('加载仪表盘数据失败:',e);
         document.getElementById('statsGrid').innerHTML='<div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-text">加载失败:'+e.message+'</div></div>';
@@ -554,152 +530,68 @@
     loadDashboardData();
     setInterval(loadDashboardData, 60000);
 
-    // --- 时段花费统计 ---
+    // --- 订阅花费构成（饼图） ---
     const PIE_COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#14b8a6','#f97316','#64748b'];
-    let periodChart = null;
+    let subsPieChart = null;
 
-    function getPeriodRange(period) {
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      const fmt = dt => `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
-      const today = fmt(now);
-
-      switch (period) {
-        case 'day':
-          return { start: today, end: today };
-        case 'week': {
-          const ago = new Date(now);
-          ago.setDate(ago.getDate() - 6);
-          return { start: fmt(ago), end: today };
-        }
-        case 'month': {
-          const ago = new Date(now);
-          ago.setMonth(ago.getMonth() - 1);
-          ago.setDate(ago.getDate() + 1);
-          return { start: fmt(ago), end: today };
-        }
-        case 'quarter': {
-          const ago = new Date(now);
-          ago.setMonth(ago.getMonth() - 3);
-          ago.setDate(ago.getDate() + 1);
-          return { start: fmt(ago), end: today };
-        }
-        case 'year': {
-          const ago = new Date(now);
-          ago.setFullYear(ago.getFullYear() - 1);
-          ago.setDate(ago.getDate() + 1);
-          return { start: fmt(ago), end: today };
-        }
-        default:
-          return null;
+    function renderActiveSubsBreakdown(data) {
+      const el = document.getElementById('activeSubsBreakdown');
+      const { total, items } = data;
+      if (!items || items.length === 0) {
+        el.innerHTML = '<div class="empty-state" style="padding:1rem"><div class="empty-state-text">暂无生效订阅</div></div>';
+        return;
       }
-    }
-
-    async function loadPeriodStats(start, end) {
-      const el = document.getElementById('periodResult');
-      el.innerHTML = '<div class="loading-skeleton" style="height:80px"></div>';
-      try {
-        const r = await fetch('/api/dashboard/period-stats', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ startDate: start, endDate: end })
-        });
-        const d = await r.json();
-        if (!d.success) throw new Error(d.message);
-        const { total, items } = d.data;
-
-        if (items.length === 0) {
-          el.innerHTML = '<div class="empty-state" style="padding:1rem"><div class="empty-state-text">该时段内无支付记录覆盖</div></div>';
-          return;
-        }
-
-        el.innerHTML = `
-          <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
-            <div style="flex-shrink:0;text-align:center;min-width:160px">
-              <div class="period-amount" style="font-size:1.75rem">¥${total.toFixed(2)}</div>
-              <div class="period-subtitle">${start} ~ ${end}</div>
-              <div class="period-subtitle" style="margin-top:0.25rem">共 ${items.length} 项（按天数比例折算）</div>
-            </div>
-            <div style="flex:1;min-width:200px;max-width:280px;margin:0 auto">
-              <canvas id="periodPieChart"></canvas>
-            </div>
-            <div style="flex:1;min-width:200px" id="periodLegend"></div>
+      const sorted = [...items].sort((a, b) => b.amountCNY - a.amountCNY);
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+          <div style="flex-shrink:0;text-align:center;min-width:140px">
+            <div class="period-amount" style="font-size:1.75rem">¥${total.toFixed(2)}</div>
+            <div class="period-subtitle">月均合计</div>
+            <div class="period-subtitle" style="margin-top:0.25rem">共 ${sorted.length} 项生效订阅</div>
           </div>
-        `;
-
-        const sorted = [...items].sort((a, b) => b.amountCNY - a.amountCNY);
-        const ctx = document.getElementById('periodPieChart').getContext('2d');
-        if (periodChart) periodChart.destroy();
-        periodChart = new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            labels: sorted.map(i => i.name),
-            datasets: [{
-              data: sorted.map(i => i.amountCNY),
-              backgroundColor: sorted.map((_, i) => PIE_COLORS[i % PIE_COLORS.length]),
-              borderWidth: 2,
-              borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#fff'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: ctx => `¥${ctx.parsed.toFixed(2)} (${(ctx.parsed / total * 100).toFixed(1)}%)`
-                }
+          <div style="flex:1;min-width:200px;max-width:280px;margin:0 auto">
+            <canvas id="subsPieChart"></canvas>
+          </div>
+          <div style="flex:1;min-width:200px" id="subsLegend"></div>
+        </div>
+      `;
+      const ctx = document.getElementById('subsPieChart').getContext('2d');
+      if (subsPieChart) subsPieChart.destroy();
+      subsPieChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: sorted.map(i => i.name),
+          datasets: [{
+            data: sorted.map(i => i.amountCNY),
+            backgroundColor: sorted.map((_, i) => PIE_COLORS[i % PIE_COLORS.length]),
+            borderWidth: 2,
+            borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `¥${ctx.parsed.toFixed(2)}/月 (${(ctx.parsed / total * 100).toFixed(1)}%)`
               }
-            },
-            cutout: '55%'
-          }
-        });
-
-        const legendEl = document.getElementById('periodLegend');
-        legendEl.innerHTML = sorted.map((item, i) => {
-          const pct = total > 0 ? (item.amountCNY / total * 100).toFixed(1) : 0;
-          return `<div class="legend-row">
-            <span class="legend-dot" style="background:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
-            <span class="legend-name">${item.name}</span>
-            <span class="legend-amount">¥${item.amountCNY.toFixed(2)}</span>
-            <span class="legend-pct">${pct}%</span>
-          </div>`;
-        }).join('');
-
-      } catch (e) {
-        el.innerHTML = `<div class="empty-state" style="padding:1rem"><div class="empty-state-text">查询失败: ${e.message}</div></div>`;
-      }
-    }
-
-    const periodTabs = document.querySelectorAll('.period-tab');
-    const customRangeEl = document.getElementById('customRange');
-
-    periodTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        periodTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const period = tab.dataset.period;
-        if (period === 'custom') {
-          customRangeEl.classList.add('show');
-        } else {
-          customRangeEl.classList.remove('show');
-          const range = getPeriodRange(period);
-          loadPeriodStats(range.start, range.end);
+            }
+          },
+          cutout: '55%'
         }
       });
-    });
-
-    document.getElementById('customRangeBtn').addEventListener('click', () => {
-      const start = document.getElementById('periodStart').value;
-      const end = document.getElementById('periodEnd').value;
-      if (!start || !end) return;
-      loadPeriodStats(start, end);
-    });
-
-    // 默认加载当月数据
-    const defaultRange = getPeriodRange('month');
-    loadPeriodStats(defaultRange.start, defaultRange.end);
+      document.getElementById('subsLegend').innerHTML = sorted.map((item, i) => {
+        const pct = total > 0 ? (item.amountCNY / total * 100).toFixed(1) : 0;
+        return `<div class="legend-row">
+          <span class="legend-dot" style="background:${PIE_COLORS[i % PIE_COLORS.length]}"></span>
+          <span class="legend-name">${item.name}</span>
+          <span class="legend-amount">¥${item.amountCNY.toFixed(2)}/月</span>
+          <span class="legend-pct">${pct}%</span>
+        </div>`;
+      }).join('');
+    }
 
     // --- 移动端菜单控制脚本 ---
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');

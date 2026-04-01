@@ -1,6 +1,6 @@
 import { handleLogin, handleLogout, getUserFromRequest } from './handlers/auth.js';
 import { handleGetConfig, handleUpdateConfig } from './handlers/config.js';
-import { handleDashboardStats, handlePeriodStats } from './handlers/dashboard.js';
+import { handleDashboardStats } from './handlers/dashboard.js';
 import { handleThirdPartyNotify } from './handlers/notify.js';
 import { handleSubscriptions } from './handlers/subscriptions.js';
 import { getConfig } from '../data/config.js';
@@ -36,10 +36,6 @@ async function handleApiRequest(request, env) {
 
   if (path === '/dashboard/stats' && method === 'GET') {
     return handleDashboardStats(env, config);
-  }
-
-  if (path === '/dashboard/period-stats' && method === 'POST') {
-    return handlePeriodStats(request, env, config);
   }
 
   if (path === '/test-notification' && method === 'POST') {
