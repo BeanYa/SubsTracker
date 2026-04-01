@@ -180,15 +180,18 @@ function getUpcomingRenewals(subscriptions, timezone, rates) {
 }
 
 function calculatePeriodExpense(subscriptions, timezone, rates, startDate, endDate) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  end.setHours(23, 59, 59, 999);
+  const rangeStart = new Date(startDate);
+  const rangeEnd = new Date(endDate);
+  rangeEnd.setHours(23, 59, 59, 999);
   const subMap = {};
   subscriptions.forEach(sub => {
     (sub.paymentHistory || []).forEach(payment => {
       if (!payment.amount || payment.amount <= 0) return;
-      const paymentDate = new Date(payment.date);
-      if (paymentDate >= start && paymentDate <= end) {
+      // Use periodStart/periodEnd for coverage matching; fall back to payment date
+      const pStart = payment.periodStart ? new Date(payment.periodStart) : new Date(payment.date);
+      const pEnd = payment.periodEnd ? new Date(payment.periodEnd) : new Date(payment.date);
+      // Payment covers the period if its coverage overlaps the query range
+      if (pStart <= rangeEnd && pEnd >= rangeStart) {
         const amountCNY = convertToCNY(payment.amount, sub.currency, rates);
         if (!subMap[sub.id]) {
           subMap[sub.id] = {
