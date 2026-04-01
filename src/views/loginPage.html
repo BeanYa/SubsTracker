@@ -8,88 +8,259 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   ${themeResources}  <style>
+    /* === 登录页大气背景 === */
     .login-container {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(-45deg, #0d9488, #0f766e, #115e59, #134e4a);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
     }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 浮动装饰光球 */
+    .login-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+    .login-orb-1 {
+      width: 400px; height: 400px;
+      background: #14b8a6;
+      top: -10%; left: -5%;
+      animation: orbFloat1 18s ease-in-out infinite;
+    }
+    .login-orb-2 {
+      width: 300px; height: 300px;
+      background: #6366f1;
+      bottom: -8%; right: -3%;
+      animation: orbFloat2 22s ease-in-out infinite;
+    }
+    .login-orb-3 {
+      width: 200px; height: 200px;
+      background: #f59e0b;
+      top: 50%; left: 60%;
+      opacity: 0.12;
+      animation: orbFloat3 15s ease-in-out infinite;
+    }
+
+    @keyframes orbFloat1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, 40px) scale(1.1); }
+      66% { transform: translate(-30px, 80px) scale(0.95); }
+    }
+    @keyframes orbFloat2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-50px, -30px) scale(1.05); }
+      66% { transform: translate(40px, -60px) scale(0.9); }
+    }
+    @keyframes orbFloat3 {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-80px, 50px); }
+    }
+
+    /* 网格装饰线 */
+    .login-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+
+    /* 登录卡片 */
     .login-box {
-      backdrop-filter: blur(8px);
-      background-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      animation: cardAppear 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
     }
+
+    @keyframes cardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .login-icon-ring {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 8px 24px -4px rgba(13, 148, 136, 0.35);
+      position: relative;
+    }
+    .login-icon-ring::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.3), transparent);
+      z-index: -1;
+      filter: blur(8px);
+    }
+
     .input-field {
-      transition: all 0.3s;
-      border: 1px solid #e2e8f0;
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      border: 1.5px solid #e2e8f0;
+      background: rgba(255,255,255,0.6);
+      font-size: 0.9375rem;
     }
     .input-field:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+      background: rgba(255,255,255,0.9);
     }
+
+    .login-btn {
+      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .login-btn:hover::after {
+      opacity: 1;
+    }
+
+    /* 暗色模式 */
     html.dark .login-container {
-      background: linear-gradient(135deg, #3b4cc4 0%, #4a2b6b 100%);
+      background: linear-gradient(-45deg, #0f172a, #1e293b, #1a1650, #0f172a);
+      background-size: 400% 400%;
+    }
+    html.dark .login-orb-1 { background: #14b8a6; opacity: 0.1; }
+    html.dark .login-orb-2 { background: #6366f1; opacity: 0.08; }
+    html.dark .login-orb-3 { background: #f59e0b; opacity: 0.06; }
+    html.dark .login-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
     }
     html.dark .login-box {
-      background-color: rgba(17, 24, 39, 0.95);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      background: rgba(15, 23, 42, 0.92);
+      border-color: rgba(255, 255, 255, 0.06);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
-    html.dark .login-box .text-gray-800 { color: #f3f4f6; }
+    html.dark .login-box .text-gray-800 { color: #f1f5f9; }
     html.dark .login-box .text-gray-600,
-    html.dark .login-box .text-gray-700 { color: #cbd5e1; }
+    html.dark .login-box .text-gray-700 { color: #94a3b8; }
+    html.dark .input-field {
+      background: rgba(51, 65, 85, 0.5);
+      border-color: #475569;
+      color: #f1f5f9;
+    }
+    html.dark .input-field:focus {
+      border-color: #14b8a6;
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+      background: rgba(51, 65, 85, 0.8);
+    }
+
+    /* 减少动画 */
+    @media (prefers-reduced-motion: reduce) {
+      .login-container { animation: none; }
+      .login-orb { animation: none; }
+      .login-box { animation: none; opacity: 1; }
+    }
   </style>
 </head>
 <body class="login-container flex items-center justify-center">
-  <div class="login-box p-8 rounded-xl w-full max-w-md">
+  <!-- 装饰元素 -->
+  <div class="login-orb login-orb-1"></div>
+  <div class="login-orb login-orb-2"></div>
+  <div class="login-orb login-orb-3"></div>
+  <div class="login-grid"></div>
+
+  <div class="login-box p-8 sm:p-10 rounded-2xl w-full max-w-md relative z-10">
     <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800"><i class="fas fa-calendar-check mr-2"></i>订阅管理系统</h1>
-      <p class="text-gray-600 mt-2">登录管理您的订阅提醒</p>
+      <div class="login-icon-ring">
+        <i class="fas fa-calendar-check text-white text-2xl"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800" style="font-family:var(--font-display);letter-spacing:-0.025em">订阅管理系统</h1>
+      <p class="text-gray-500 mt-2 text-sm" style="font-family:var(--font-body)">登录管理您的订阅提醒</p>
     </div>
-    
-    <form id="loginForm" class="space-y-6">
+
+    <form id="loginForm" class="space-y-5">
       <div>
-        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
-          <i class="fas fa-user mr-2" aria-hidden="true"></i>用户名
+        <label for="username" class="block text-sm font-medium text-gray-600 mb-1.5">
+          用户名
         </label>
         <input type="text" id="username" name="username" required autocomplete="username"
-          class="input-field w-full px-4 py-3 rounded-lg text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+          class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-          <i class="fas fa-lock mr-2" aria-hidden="true"></i>密码
+        <label for="password" class="block text-sm font-medium text-gray-600 mb-1.5">
+          密码
         </label>
         <input type="password" id="password" name="password" required autocomplete="current-password"
-          class="input-field w-full px-4 py-3 rounded-lg text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+          class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
       </div>
 
       <button type="submit"
-        class="btn-primary w-full py-3 rounded-lg text-white font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
-        <i class="fas fa-sign-in-alt mr-2" aria-hidden="true"></i>登录
+        class="login-btn w-full py-3 rounded-xl text-white font-medium mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 transition-all duration-200 hover:shadow-lg">
+        登录
       </button>
-      
-      <div id="errorMsg" class="text-red-500 text-center"></div>
+
+      <div id="errorMsg" class="text-red-500 text-center text-sm" style="min-height:1.25rem"></div>
     </form>
   </div>
-  
+
   <script>
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
-      
+
       const button = e.target.querySelector('button');
       const originalContent = button.innerHTML;
-      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>登录中...';
+      button.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i>登录中...';
       button.disabled = true;
-      
+
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
           window.location.href = '/admin';
         } else {

@@ -28,25 +28,26 @@
       transition: color 0.3s ease;
       display: block;
     }
-    .hover-text:hover { color: #3b82f6; }
+    .hover-text:hover { color: var(--color-primary); }
     .hover-tooltip {
       position: fixed;
       z-index: 9999;
       background: #1f2937;
       color: white;
       padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.875rem;
+      border-radius: 10px;
+      font-size: 0.8125rem;
       max-width: 320px;
       word-wrap: break-word;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateY(-8px);
       white-space: normal;
       pointer-events: none;
-      line-height: 1.4;
+      line-height: 1.5;
+      font-family: var(--font-body);
     }
     .hover-tooltip.show {
       opacity: 1;
@@ -84,25 +85,26 @@
       transition: color 0.3s ease;
       display: block;
     }
-    .notes-text:hover { color: #3b82f6; }
+    .notes-text:hover { color: var(--color-primary); }
     .notes-tooltip {
       position: fixed;
       z-index: 9999;
       background: #1f2937;
       color: white;
       padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.875rem;
+      border-radius: 10px;
+      font-size: 0.8125rem;
       max-width: 320px;
       word-wrap: break-word;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateY(-8px);
       white-space: normal;
       pointer-events: none;
-      line-height: 1.4;
+      line-height: 1.5;
+      font-family: var(--font-body);
     }
     .notes-tooltip.show {
       opacity: 1;
