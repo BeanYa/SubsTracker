@@ -2,17 +2,17 @@ import { MS_PER_DAY, getCurrentTimeInTimezone, getTimezoneDateParts } from './ti
 
 const CATEGORY_SEPARATOR_REGEX = /[\/，,\s]+/;
 
-// 汇率配置 (以 CNY 为基准，当 API 不可用或缺少特定币种如 TWD 时使用)
+// 兜底汇率需与 Frankfurter `base=CNY` 格式保持一致：1 CNY = rate foreign currency。
 const FALLBACK_RATES = {
   'CNY': 1,
-  'USD': 6.98,
-  'HKD': 0.90,
-  'TWD': 0.22,
-  'JPY': 0.044,
-  'EUR': 8.16,
-  'GBP': 9.40,
-  'KRW': 0.0048,
-  'TRY': 0.16
+  'USD': 1 / 6.98,
+  'HKD': 1 / 0.90,
+  'TWD': 1 / 0.22,
+  'JPY': 1 / 0.044,
+  'EUR': 1 / 8.16,
+  'GBP': 1 / 9.40,
+  'KRW': 1 / 0.0048,
+  'TRY': 1 / 0.16
 };
 
 async function getDynamicRates(env) {

@@ -6,6 +6,8 @@
   "scripts": {
     "build": "echo 'No build step required for Workers runtime'",
     "setup": "node scripts/setup-kv.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "deploy": "npx wrangler deploy --env=\"\"",
     "deploy:safe": "npm run setup && npm run deploy"
   },

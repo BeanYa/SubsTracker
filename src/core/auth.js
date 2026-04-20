@@ -59,6 +59,16 @@ async function verifyJWT(token, secret) {
     }
 
     const payload = JSON.parse(atob(payloadBase64));
+    if (!payload || typeof payload !== 'object' || !Number.isFinite(payload.exp)) {
+      console.log('[JWT] Token负载无效');
+      return null;
+    }
+
+    if (payload.exp <= Math.floor(Date.now() / 1000)) {
+      console.log('[JWT] Token已过期');
+      return null;
+    }
+
     console.log('[JWT] 验证成功，用户:', payload.username);
     return payload;
   } catch (error) {

@@ -15,6 +15,49 @@ function trimPaymentHistory(records = [], limit = 100) {
   return [...keptInitial, ...keptOther];
 }
 
+const VALID_PERIOD_UNITS = new Set(['day', 'month', 'year']);
+
+function hasExplicitPeriodConfig(subscription = {}) {
+  return Object.prototype.hasOwnProperty.call(subscription, 'periodValue') || Object.prototype.hasOwnProperty.call(subscription, 'periodUnit');
+}
+
+function normalizePeriodValue(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return null;
+
+  const normalized = Math.floor(numericValue);
+  return normalized > 0 ? normalized : null;
+}
+
+function getValidatedPeriodConfig(subscription = {}, fallback = null) {
+  const periodValue = Object.prototype.hasOwnProperty.call(subscription, 'periodValue')
+    ? normalizePeriodValue(subscription.periodValue)
+    : fallback?.periodValue ?? null;
+  const periodUnit = Object.prototype.hasOwnProperty.call(subscription, 'periodUnit')
+    ? subscription.periodUnit
+    : fallback?.periodUnit ?? null;
+
+  if (!periodValue || !VALID_PERIOD_UNITS.has(periodUnit)) {
+    return null;
+  }
+
+  return { periodValue, periodUnit };
+}
+
+function applyPeriodToDate(date, periodValue, periodUnit) {
+  const nextDate = new Date(date);
+
+  if (periodUnit === 'day') {
+    nextDate.setDate(nextDate.getDate() + periodValue);
+  } else if (periodUnit === 'month') {
+    nextDate.setMonth(nextDate.getMonth() + periodValue);
+  } else if (periodUnit === 'year') {
+    nextDate.setFullYear(nextDate.getFullYear() + periodValue);
+  }
+
+  return nextDate;
+}
+
 async function getAllSubscriptions(env) {
   try {
     const data = await env.SUBSCRIPTIONS_KV.get('subscriptions');
@@ -32,9 +75,15 @@ async function getSubscription(id, env) {
 async function createSubscription(subscription, env) {
   try {
     const subscriptions = await getAllSubscriptions(env);
+    const hasIncomingPeriodConfig = hasExplicitPeriodConfig(subscription);
+    const periodConfig = getValidatedPeriodConfig(subscription, { periodValue: 1, periodUnit: 'month' });
 
     if (!subscription.name || !subscription.expiryDate) {
       return { success: false, message: '缺少必填字段' };
+    }
+
+    if (hasIncomingPeriodConfig && !periodConfig) {
+      return { success: false, message: '续订周期无效' };
     }
 
     let expiryDate = new Date(subscription.expiryDate);
@@ -48,24 +97,18 @@ async function createSubscription(subscription, env) {
         expiryDate.getDate()
       );
 
-      if (lunar && subscription.periodValue && subscription.periodUnit) {
+      if (lunar && hasIncomingPeriodConfig) {
         while (expiryDate <= currentTime) {
-          lunar = lunarBiz.addLunarPeriod(lunar, subscription.periodValue, subscription.periodUnit);
+          lunar = lunarBiz.addLunarPeriod(lunar, periodConfig.periodValue, periodConfig.periodUnit);
           const solar = lunarBiz.lunar2solar(lunar);
           expiryDate = new Date(solar.year, solar.month - 1, solar.day);
         }
         subscription.expiryDate = expiryDate.toISOString();
       }
     } else {
-      if (expiryDate < currentTime && subscription.periodValue && subscription.periodUnit) {
+      if (expiryDate < currentTime && hasIncomingPeriodConfig) {
         while (expiryDate < currentTime) {
-          if (subscription.periodUnit === 'day') {
-            expiryDate.setDate(expiryDate.getDate() + subscription.periodValue);
-          } else if (subscription.periodUnit === 'month') {
-            expiryDate.setMonth(expiryDate.getMonth() + subscription.periodValue);
-          } else if (subscription.periodUnit === 'year') {
-            expiryDate.setFullYear(expiryDate.getFullYear() + subscription.periodValue);
-          }
+          expiryDate = applyPeriodToDate(expiryDate, periodConfig.periodValue, periodConfig.periodUnit);
         }
         subscription.expiryDate = expiryDate.toISOString();
       }
@@ -82,8 +125,8 @@ async function createSubscription(subscription, env) {
       category: subscription.category ? subscription.category.trim() : '',
       startDate: subscription.startDate || null,
       expiryDate: subscription.expiryDate,
-      periodValue: subscription.periodValue || 1,
-      periodUnit: subscription.periodUnit || 'month',
+      periodValue: periodConfig.periodValue,
+      periodUnit: periodConfig.periodUnit,
       reminderUnit: reminderSetting.unit,
       reminderValue: reminderSetting.value,
       reminderDays: reminderSetting.unit === 'day' ? reminderSetting.value : undefined,
@@ -122,6 +165,9 @@ async function updateSubscription(id, subscription, env) {
   try {
     const subscriptions = await getAllSubscriptions(env);
     const index = subscriptions.findIndex(s => s.id === id);
+    const storedPeriodConfig = getValidatedPeriodConfig(subscriptions[index], { periodValue: 1, periodUnit: 'month' });
+    const hasIncomingPeriodConfig = hasExplicitPeriodConfig(subscription);
+    const periodConfig = getValidatedPeriodConfig(subscription, storedPeriodConfig || { periodValue: 1, periodUnit: 'month' });
 
     if (index === -1) {
       return { success: false, message: '订阅不存在' };
@@ -129,6 +175,10 @@ async function updateSubscription(id, subscription, env) {
 
     if (!subscription.name || !subscription.expiryDate) {
       return { success: false, message: '缺少必填字段' };
+    }
+
+    if (hasIncomingPeriodConfig && !periodConfig) {
+      return { success: false, message: '续订周期无效' };
     }
 
     let expiryDate = new Date(subscription.expiryDate);
@@ -144,24 +194,18 @@ async function updateSubscription(id, subscription, env) {
       if (!lunar) {
         return { success: false, message: '农历日期超出支持范围（1900-2100年）' };
       }
-      if (lunar && expiryDate < currentTime && subscription.periodValue && subscription.periodUnit) {
+      if (lunar && expiryDate < currentTime && periodConfig) {
         do {
-          lunar = lunarBiz.addLunarPeriod(lunar, subscription.periodValue, subscription.periodUnit);
+          lunar = lunarBiz.addLunarPeriod(lunar, periodConfig.periodValue, periodConfig.periodUnit);
           const solar = lunarBiz.lunar2solar(lunar);
           expiryDate = new Date(solar.year, solar.month - 1, solar.day);
         } while (expiryDate < currentTime);
         subscription.expiryDate = expiryDate.toISOString();
       }
     } else {
-      if (expiryDate < currentTime && subscription.periodValue && subscription.periodUnit) {
+      if (expiryDate < currentTime && periodConfig) {
         while (expiryDate < currentTime) {
-          if (subscription.periodUnit === 'day') {
-            expiryDate.setDate(expiryDate.getDate() + subscription.periodValue);
-          } else if (subscription.periodUnit === 'month') {
-            expiryDate.setMonth(expiryDate.getMonth() + subscription.periodValue);
-          } else if (subscription.periodUnit === 'year') {
-            expiryDate.setFullYear(expiryDate.getFullYear() + subscription.periodValue);
-          }
+          expiryDate = applyPeriodToDate(expiryDate, periodConfig.periodValue, periodConfig.periodUnit);
         }
         subscription.expiryDate = expiryDate.toISOString();
       }
@@ -198,8 +242,8 @@ async function updateSubscription(id, subscription, env) {
       category: subscription.category !== undefined ? subscription.category.trim() : (subscriptions[index].category || ''),
       startDate: subscription.startDate || subscriptions[index].startDate,
       expiryDate: subscription.expiryDate,
-      periodValue: subscription.periodValue || subscriptions[index].periodValue || 1,
-      periodUnit: subscription.periodUnit || subscriptions[index].periodUnit || 'month',
+      periodValue: hasIncomingPeriodConfig ? periodConfig.periodValue : (subscriptions[index].periodValue || 1),
+      periodUnit: hasIncomingPeriodConfig ? periodConfig.periodUnit : (subscriptions[index].periodUnit || 'month'),
       reminderUnit: reminderSetting.unit,
       reminderValue: reminderSetting.value,
       reminderDays: reminderSetting.unit === 'day' ? reminderSetting.value : undefined,
@@ -251,8 +295,9 @@ async function manualRenewSubscription(id, env, options = {}) {
 
     const subscription = subscriptions[index];
 
-    if (!subscription.periodValue || !subscription.periodUnit) {
-      return { success: false, message: '订阅未设置续订周期' };
+    const periodConfig = getValidatedPeriodConfig(subscription);
+    if (!periodConfig) {
+      return { success: false, message: '订阅续订周期无效' };
     }
 
     const config = await getConfig(env);
@@ -262,7 +307,7 @@ async function manualRenewSubscription(id, env, options = {}) {
 
     const paymentDate = options.paymentDate ? new Date(options.paymentDate) : currentTime;
     const amount = options.amount !== undefined ? options.amount : subscription.amount || 0;
-    const periodMultiplier = options.periodMultiplier || 1;
+    const periodMultiplier = normalizePeriodValue(options.periodMultiplier ?? 1) || 1;
     const note = options.note || '手动续订';
     const mode = subscription.subscriptionMode || 'cycle';
 
@@ -290,19 +335,19 @@ async function manualRenewSubscription(id, env, options = {}) {
 
       let nextLunar = lunar;
       for (let i = 0; i < periodMultiplier; i++) {
-        nextLunar = lunarBiz.addLunarPeriod(nextLunar, subscription.periodValue, subscription.periodUnit);
+        nextLunar = lunarBiz.addLunarPeriod(nextLunar, periodConfig.periodValue, periodConfig.periodUnit);
       }
       const solar = lunarBiz.lunar2solar(nextLunar);
       newExpiryDate = new Date(solar.year, solar.month - 1, solar.day);
     } else {
       newExpiryDate = new Date(newStartDate);
-      const totalPeriodValue = subscription.periodValue * periodMultiplier;
+      const totalPeriodValue = periodConfig.periodValue * periodMultiplier;
 
-      if (subscription.periodUnit === 'day') {
+      if (periodConfig.periodUnit === 'day') {
         newExpiryDate.setDate(newExpiryDate.getDate() + totalPeriodValue);
-      } else if (subscription.periodUnit === 'month') {
+      } else if (periodConfig.periodUnit === 'month') {
         newExpiryDate.setMonth(newExpiryDate.getMonth() + totalPeriodValue);
-      } else if (subscription.periodUnit === 'year') {
+      } else if (periodConfig.periodUnit === 'year') {
         newExpiryDate.setFullYear(newExpiryDate.getFullYear() + totalPeriodValue);
       }
     }
@@ -365,7 +410,7 @@ async function deletePaymentRecord(subscriptionId, paymentId, env) {
     if (paymentHistory.length > 0) {
       const sortedByPeriodEnd = [...paymentHistory].sort((a, b) => {
         const dateA = a.periodEnd ? new Date(a.periodEnd) : new Date(0);
-        const dateB = a.periodEnd ? new Date(a.periodEnd) : new Date(0);
+        const dateB = b.periodEnd ? new Date(b.periodEnd) : new Date(0);
         return dateB - dateA;
       });
 
@@ -472,5 +517,7 @@ export {
   manualRenewSubscription,
   deletePaymentRecord,
   updatePaymentRecord,
-  toggleSubscriptionStatus
+  toggleSubscriptionStatus,
+  getValidatedPeriodConfig,
+  applyPeriodToDate
 };

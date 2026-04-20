@@ -2,8 +2,21 @@ const CATEGORY_SEPARATOR_REGEX = /[\/，,\s]+/;
 
 function getCookieValue(cookieString, key) {
   if (!cookieString) return null;
-  const match = cookieString.match(new RegExp('(^| )' + key + '=([^;]+)'));
-  return match ? match[2] : null;
+  const targetKey = String(key || '').trim();
+  if (!targetKey) return null;
+
+  const cookies = cookieString.split(';');
+  for (const item of cookies) {
+    const separatorIndex = item.indexOf('=');
+    if (separatorIndex === -1) continue;
+
+    const cookieKey = item.slice(0, separatorIndex).trim();
+    if (cookieKey !== targetKey) continue;
+
+    return item.slice(separatorIndex + 1).trim();
+  }
+
+  return null;
 }
 
 function generateRandomSecret() {

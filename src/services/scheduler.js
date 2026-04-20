@@ -1,5 +1,5 @@
 import { getConfig } from '../data/config.js';
-import { getAllSubscriptions } from '../data/subscriptions.js';
+import { getAllSubscriptions, getValidatedPeriodConfig, applyPeriodToDate } from '../data/subscriptions.js';
 import { getCurrentTimeInTimezone, MS_PER_HOUR, MS_PER_DAY, getTimezoneMidnightTimestamp } from '../core/time.js';
 import { formatNotificationContent, shouldTriggerReminder } from './notify/reminder.js';
 import { sendNotificationToAllChannels } from './notify/index.js';
@@ -87,13 +87,19 @@ async function checkExpiringSubscriptions(env) {
       let diffHours = diffMs / MS_PER_HOUR;
 
       if (subscription.autoRenew && daysDiff < 0) {
+        const periodConfig = getValidatedPeriodConfig(subscription);
+        if (!periodConfig) {
+          console.warn(`[定时任务] 跳过无效续订周期的订阅: ${subscription.id}`);
+          continue;
+        }
+
         const mode = subscription.subscriptionMode || 'cycle';
         let periodsAdded = 0;
 
         if (subscription.useLunar) {
           let lunar = lunarCalendar.solar2lunar(expiryDate.getFullYear(), expiryDate.getMonth() + 1, expiryDate.getDate());
           while (expiryDate <= currentTime) {
-            lunar = lunarBiz.addLunarPeriod(lunar, subscription.periodValue, subscription.periodUnit);
+            lunar = lunarBiz.addLunarPeriod(lunar, periodConfig.periodValue, periodConfig.periodUnit);
             const solar = lunarBiz.lunar2solar(lunar);
             expiryDate = new Date(solar.year, solar.month - 1, solar.day);
             periodsAdded++;
@@ -103,13 +109,7 @@ async function checkExpiringSubscriptions(env) {
             if (mode === 'reset') {
               expiryDate = new Date(currentTime);
             }
-            if (subscription.periodUnit === 'day') {
-              expiryDate.setDate(expiryDate.getDate() + subscription.periodValue);
-            } else if (subscription.periodUnit === 'month') {
-              expiryDate.setMonth(expiryDate.getMonth() + subscription.periodValue);
-            } else if (subscription.periodUnit === 'year') {
-              expiryDate.setFullYear(expiryDate.getFullYear() + subscription.periodValue);
-            }
+            expiryDate = applyPeriodToDate(expiryDate, periodConfig.periodValue, periodConfig.periodUnit);
             periodsAdded++;
           }
         }
