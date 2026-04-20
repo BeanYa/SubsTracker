@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>订阅管理系统</title>
+  <title>登录 - SubsTracker</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   ${themeResources}  <style>
@@ -405,6 +405,226 @@
         padding: 1.6rem;
       }
     }
+
+    /* Stripe redesign overrides */
+    .login-container {
+      background:
+        radial-gradient(circle at 12% 12%, rgba(249, 107, 238, 0.16), transparent 26%),
+        radial-gradient(circle at 88% 8%, rgba(83, 58, 253, 0.18), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, #f6f9fc 100%);
+    }
+
+    .login-grid {
+      opacity: 0.28;
+      background-image:
+        linear-gradient(rgba(6, 27, 49, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 27, 49, 0.04) 1px, transparent 1px);
+      background-size: 96px 96px;
+    }
+
+    .login-orb {
+      filter: blur(96px);
+      opacity: 0.16;
+    }
+
+    .login-orb-1 { background: #f96bee; }
+    .login-orb-2 { background: #533afd; }
+    .login-orb-3 { background: #ea2261; }
+
+    .login-shell {
+      width: min(1140px, calc(100vw - 2rem));
+      gap: 1.5rem;
+      grid-template-columns: minmax(0, 1.15fr) minmax(21rem, 28rem);
+    }
+
+    .login-editorial {
+      min-height: 34rem;
+      padding: 2.25rem;
+      border-radius: 8px;
+      border: 1px solid rgba(185, 185, 249, 0.14);
+      background: linear-gradient(180deg, #1c1e54 0%, #0d253d 100%);
+      box-shadow: var(--color-shadow-deep);
+      color: #ffffff;
+    }
+
+    .login-editorial::before {
+      right: -10%;
+      bottom: -14%;
+      width: 16rem;
+      height: 16rem;
+      background: radial-gradient(circle, rgba(249, 107, 238, 0.28), transparent 70%);
+    }
+
+    .login-editorial-kicker {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+    }
+
+    .login-editorial h1 {
+      max-width: 8ch;
+      color: #ffffff;
+      font-family: var(--font-display);
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .login-editorial p {
+      max-width: 34rem;
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 1.05rem;
+    }
+
+    .login-feature-grid {
+      gap: 0.9rem;
+    }
+
+    .login-feature-card {
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .login-feature-card strong {
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .login-feature-card span {
+      color: rgba(255, 255, 255, 0.68);
+    }
+
+    .login-editorial-footer {
+      border-top-color: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .login-box {
+      padding: 2.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--color-shadow);
+    }
+
+    .login-icon-ring {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #665efd 0%, #533afd 100%);
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 22px 34px -26px, rgba(0, 0, 0, 0.12) 0px 12px 20px -16px;
+    }
+
+    .login-icon-ring::before {
+      inset: -4px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(249, 107, 238, 0.34), transparent 72%);
+    }
+
+    .input-field {
+      border-radius: 4px;
+      border-color: var(--color-border);
+      background: #ffffff;
+      color: var(--color-heading);
+      font-size: 0.95rem;
+    }
+
+    .input-field:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(83, 58, 253, 0.12);
+      background: #ffffff;
+    }
+
+    .login-btn {
+      border-radius: 4px;
+      background: var(--color-primary);
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: 0;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 16px 28px -18px, rgba(0, 0, 0, 0.12) 0px 10px 16px -12px;
+    }
+
+    .login-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .login-btn::after {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, transparent 58%);
+    }
+
+    #errorMsg {
+      color: #cb1f59;
+    }
+
+    html.dark .login-container {
+      background:
+        radial-gradient(circle at 12% 14%, rgba(249, 107, 238, 0.12), transparent 24%),
+        radial-gradient(circle at 88% 8%, rgba(83, 58, 253, 0.16), transparent 28%),
+        linear-gradient(180deg, #0d253d 0%, #0a1d31 100%);
+    }
+
+    html.dark .login-grid {
+      opacity: 0.24;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+
+    html.dark .login-editorial {
+      background: linear-gradient(180deg, rgba(28, 30, 84, 0.96), rgba(10, 29, 49, 0.98));
+      border-color: rgba(185, 185, 249, 0.14);
+    }
+
+    html.dark .login-box {
+      background: rgba(13, 37, 61, 0.9);
+      border-color: var(--dark-border);
+      box-shadow: var(--color-shadow-deep);
+    }
+
+    html.dark .login-box .text-gray-800 {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .login-box .text-gray-500,
+    html.dark .login-box .text-gray-600,
+    html.dark .login-box .text-gray-700 {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .input-field {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--dark-border);
+      color: #ffffff;
+    }
+
+    html.dark .input-field:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-primary-light);
+      box-shadow: 0 0 0 3px rgba(185, 185, 249, 0.14);
+    }
+
+    @media (max-width: 1023px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-editorial {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .login-shell {
+        width: min(100%, calc(100vw - 1.5rem));
+      }
+
+      .login-editorial,
+      .login-box {
+        padding: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body class="login-container flex items-center justify-center">
@@ -417,31 +637,31 @@
   <div class="login-shell">
     <div class="login-editorial">
       <div>
-        <div class="login-editorial-kicker">Editorial Access</div>
-        <h1>让每一笔订阅 都有秩序。</h1>
-        <p>登录后进入统一控制台，查看费用脉冲、续费窗口与多渠道提醒状态，用更清晰的界面维护你的全部订阅。</p>
+        <div class="login-editorial-kicker">Subscription Operations</div>
+        <h1>所有订阅，统一掌控。</h1>
+        <p>登录后进入统一控制台，查看支出、续费窗口与通知链路状态，把日常维护压缩到同一视图。</p>
         <div class="login-feature-grid">
           <div class="login-feature-card">
-            <strong>费用脉冲</strong>
-            <span>月度与年度支出汇总在同一仪表盘展示，快速定位成本上升点。</span>
+            <strong>费用总览</strong>
+            <span>月度与年度支出统一折算，快速识别订阅成本变化。</span>
           </div>
           <div class="login-feature-card">
-            <strong>续费视野</strong>
-            <span>按到期顺序管理服务，把最需要处理的订阅放在最前面。</span>
+            <strong>续费节奏</strong>
+            <span>按到期顺序巡检服务，在扣费前完成调整或取消。</span>
           </div>
           <div class="login-feature-card">
-            <strong>多渠道提醒</strong>
-            <span>Telegram、Webhook、邮件等配置集中管理，支持逐项测试。</span>
+            <strong>通知链路</strong>
+            <span>Telegram、Webhook、邮件等渠道集中配置并支持验证。</span>
           </div>
           <div class="login-feature-card">
-            <strong>浅深主题</strong>
-            <span>界面支持主题切换，适合长期作为个人订阅控制台使用。</span>
+            <strong>深浅主题</strong>
+            <span>轻量界面适合长期驻留，白天和夜间都保持清晰层级。</span>
           </div>
         </div>
       </div>
       <div class="login-editorial-footer">
         <span>SubsTracker</span>
-        <span>Designed For Daily Ops</span>
+        <span>Subscription Control Plane</span>
       </div>
     </div>
 
@@ -450,8 +670,8 @@
         <div class="login-icon-ring">
           <i class="fas fa-calendar-check text-white text-2xl"></i>
         </div>
-        <h2 class="text-2xl font-bold text-gray-800" style="font-family:var(--font-display);letter-spacing:-0.025em">订阅管理系统</h2>
-        <p class="text-gray-500 mt-2 text-sm" style="font-family:var(--font-body)">登录管理您的订阅提醒</p>
+        <h2 class="text-2xl font-bold text-gray-800" style="font-family:var(--font-display);letter-spacing:-0.025em">SubsTracker</h2>
+        <p class="text-gray-500 mt-2 text-sm" style="font-family:var(--font-body)">登录访问订阅控制台</p>
       </div>
 
       <form id="loginForm" class="space-y-5">

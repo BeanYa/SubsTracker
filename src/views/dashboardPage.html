@@ -734,6 +734,322 @@
         transform: none;
       }
     }
+
+    /* Stripe redesign overrides */
+    .stats-grid {
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      border-radius: 8px;
+      border-color: var(--color-border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 249, 252, 0.96) 100%);
+      box-shadow: var(--color-shadow);
+    }
+
+    .stat-card::before {
+      background: linear-gradient(90deg, transparent, rgba(83, 58, 253, 0.18), transparent);
+    }
+
+    .stat-card::after {
+      right: -12%;
+      bottom: -35%;
+      width: 12rem;
+      height: 12rem;
+      background: radial-gradient(circle, rgba(249, 107, 238, 0.14), transparent 68%);
+    }
+
+    html.dark .stat-card {
+      background: linear-gradient(180deg, rgba(16, 38, 65, 0.92) 0%, rgba(12, 29, 50, 0.94) 100%);
+      border-color: var(--dark-border);
+      box-shadow: var(--color-shadow-deep);
+    }
+
+    html.dark .stat-card::after {
+      background: radial-gradient(circle, rgba(249, 107, 238, 0.16), transparent 70%);
+    }
+
+    .metric-card {
+      min-height: 13rem;
+      padding: 1.4rem;
+    }
+
+    .metric-card-icon {
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 6px;
+      background: rgba(83, 58, 253, 0.08);
+      border-color: rgba(83, 58, 253, 0.14);
+      color: var(--color-primary);
+    }
+
+    html.dark .metric-card-icon {
+      background: rgba(185, 185, 249, 0.08);
+      border-color: rgba(185, 185, 249, 0.18);
+      color: #ffffff;
+    }
+
+    .metric-card-footer strong {
+      font-weight: 400;
+    }
+
+    .stat-card-header {
+      color: var(--color-label);
+      letter-spacing: 0.14em;
+    }
+
+    .stat-card-value {
+      color: var(--color-heading);
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      font-weight: 300;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-card-subtitle {
+      color: var(--color-text-muted);
+    }
+
+    .stat-card-trend {
+      padding: 0.3rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+
+    .stat-card-trend.up {
+      color: var(--color-success-text);
+      background: rgba(21, 190, 83, 0.12);
+    }
+
+    .stat-card-trend.down {
+      color: var(--color-danger-text);
+      background: rgba(234, 34, 97, 0.12);
+    }
+
+    .stat-card-trend.flat {
+      color: var(--color-label);
+      background: rgba(83, 58, 253, 0.08);
+    }
+
+    html.dark .stat-card-trend.up {
+      color: #c0f2d1;
+      background: rgba(21, 190, 83, 0.18);
+    }
+
+    html.dark .stat-card-trend.down {
+      color: #ffb6cf;
+      background: rgba(234, 34, 97, 0.18);
+    }
+
+    html.dark .stat-card-trend.flat {
+      color: #ffffff;
+      background: rgba(185, 185, 249, 0.14);
+    }
+
+    .panel-header {
+      padding: 1.25rem 1.5rem 1rem;
+      border-bottom-color: var(--color-border);
+    }
+
+    .panel-title {
+      color: var(--color-heading);
+      font-size: 1.05rem;
+      font-weight: 400;
+    }
+
+    .panel-title i {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 6px;
+      background: rgba(83, 58, 253, 0.06);
+    }
+
+    html.dark .panel-title i {
+      background: rgba(185, 185, 249, 0.08);
+    }
+
+    .icon-emerald { color: var(--color-success); }
+    .icon-blue { color: #665efd; }
+    .icon-amber { color: #9b6829; }
+    .icon-indigo { color: #1c1e54; }
+    .icon-purple { color: #533afd; }
+    .icon-green { color: #15be53; }
+
+    .badge {
+      border-radius: 4px;
+      padding: 0.25rem 0.55rem;
+      background: #ffffff;
+      border-color: var(--color-primary-light);
+      color: var(--color-primary);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+    }
+
+    html.dark .badge {
+      background: rgba(185, 185, 249, 0.08);
+      border-color: rgba(185, 185, 249, 0.18);
+      color: #ffffff;
+    }
+
+    .list-item,
+    .ranking-item,
+    .scheduler-unit,
+    .scheduler-history-item,
+    .breakdown-total {
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: rgba(246, 249, 252, 0.9);
+      box-shadow: none;
+    }
+
+    .list-item:hover,
+    .ranking-item:hover {
+      border-color: var(--color-primary-light);
+      background: rgba(83, 58, 253, 0.04);
+      transform: translateY(-1px);
+    }
+
+    .list-item-name,
+    .ranking-item-name,
+    .scheduler-value,
+    .scheduler-history-title,
+    .period-amount {
+      color: var(--color-heading);
+      font-weight: 400;
+    }
+
+    .list-item-amount,
+    .ranking-item-amount,
+    .period-amount {
+      color: var(--color-heading);
+      font-weight: 300;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .list-item-badge {
+      border-radius: 4px;
+      background: rgba(83, 58, 253, 0.06);
+      color: var(--color-primary);
+    }
+
+    .ranking-progress {
+      height: 0.4rem;
+      background: rgba(83, 58, 253, 0.08);
+    }
+
+    .ranking-progress-bar.color-1 { background: linear-gradient(90deg, #533afd, #665efd); }
+    .ranking-progress-bar.color-2 { background: linear-gradient(90deg, #1c1e54, #533afd); }
+    .ranking-progress-bar.color-3 { background: linear-gradient(90deg, #15be53, #56d87e); }
+    .ranking-progress-bar.color-4 { background: linear-gradient(90deg, #ea2261, #f96bee); }
+    .ranking-progress-bar.color-5 { background: linear-gradient(90deg, #273951, #64748d); }
+
+    .breakdown-total {
+      background: linear-gradient(180deg, rgba(83, 58, 253, 0.04) 0%, #ffffff 100%);
+    }
+
+    .legend-name {
+      color: var(--color-label);
+    }
+
+    .legend-amount {
+      color: var(--color-text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .legend-pct {
+      color: var(--color-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .scheduler-label {
+      color: var(--color-label);
+      letter-spacing: 0.12em;
+    }
+
+    .scheduler-badge {
+      border-radius: 4px;
+      padding: 0.3rem 0.65rem;
+    }
+
+    .scheduler-badge.sent {
+      color: var(--color-success-text);
+      background: rgba(21, 190, 83, 0.12);
+    }
+
+    .scheduler-badge.idle {
+      color: var(--color-warning);
+      background: rgba(155, 104, 41, 0.1);
+    }
+
+    .scheduler-history-item {
+      border-left: 2px solid var(--color-primary);
+    }
+
+    .loading-skeleton {
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(214, 217, 252, 0.5) 25%, rgba(255, 255, 255, 0.95) 50%, rgba(214, 217, 252, 0.5) 75%);
+    }
+
+    html.dark .list-item,
+    html.dark .ranking-item,
+    html.dark .scheduler-unit,
+    html.dark .scheduler-history-item,
+    html.dark .breakdown-total {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--dark-border);
+    }
+
+    html.dark .list-item:hover,
+    html.dark .ranking-item:hover {
+      background: rgba(185, 185, 249, 0.08);
+      border-color: rgba(185, 185, 249, 0.28);
+    }
+
+    html.dark .list-item-name,
+    html.dark .ranking-item-name,
+    html.dark .ranking-item-amount,
+    html.dark .period-amount,
+    html.dark .legend-name,
+    html.dark .scheduler-value,
+    html.dark .scheduler-history-title {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .list-item-meta,
+    html.dark .period-subtitle,
+    html.dark .legend-amount,
+    html.dark .scheduler-detail,
+    html.dark .scheduler-history-detail {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .list-item-badge {
+      background: rgba(185, 185, 249, 0.12);
+      color: #ffffff;
+    }
+
+    html.dark .ranking-progress {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    html.dark .legend-pct {
+      color: #ffffff;
+    }
+
+    html.dark .scheduler-label {
+      color: var(--dark-text-subtle);
+    }
+
+    html.dark .scheduler-badge.sent {
+      color: #c0f2d1;
+      background: rgba(21, 190, 83, 0.18);
+    }
+
+    html.dark .scheduler-badge.idle {
+      color: #f4d9ab;
+      background: rgba(155, 104, 41, 0.18);
+    }
   </style>
 </head>
 <body class="bg-gray-50 dashboard-shell">
@@ -746,10 +1062,10 @@
           </div>
           <div class="shell-brand-copy">
             <span>SubsTracker</span>
-            <small>Editorial Dashboard</small>
+            <small>Finance Overview</small>
           </div>
         </div>
-        <span id="systemTimeDisplay" class="shell-time hidden xl:block"></span>
+        <span id="systemTimeDisplay" class="shell-time hidden xl:inline-flex xl:items-center"></span>
         
         <div class="hidden md:flex items-center space-x-2 ml-auto">
           <a href="/admin/dashboard" class="shell-link shell-link-active">
@@ -797,9 +1113,9 @@
     <div class="hero-banner dashboard-hero animate-in mb-8">
       <div class="hero-grid">
         <div>
-          <div class="hero-eyebrow">Editorial Analytics Console</div>
-          <h2 class="hero-title">订阅脉冲 仪表盘</h2>
-          <p class="hero-copy">把费用、续费风险与提醒任务状态压缩到同一张控制台里，用更明确的层级判断哪些服务正在推高成本，哪些提醒链路需要优先关注。</p>
+          <div class="hero-eyebrow">Subscription Analytics</div>
+          <h2 class="hero-title">订阅总览</h2>
+          <p class="hero-copy">把月度支出、续费风险与提醒执行状态收拢到同一张控制台，用统一折算金额识别成本波动与即将扣费的服务。</p>
           <div class="hero-meta">
             <span class="hero-pill"><i class="fas fa-yen-sign"></i>统一折算 CNY</span>
             <span class="hero-pill"><i class="fas fa-sync-alt"></i>每 60 秒自动刷新</span>
@@ -808,14 +1124,14 @@
         </div>
         <div class="hero-aside">
           <div class="hero-stat hero-stat-accent">
-            <span>巡检焦点</span>
-            <strong>续费前 7 天</strong>
-            <small>优先处理即将扣款的服务，避免成本突增和重复订阅。</small>
+            <span>监控重点</span>
+            <strong>未来 7 天续费</strong>
+            <small>优先处理即将扣费的服务，避免不必要的续订支出。</small>
           </div>
           <div class="hero-stat">
-            <span>观察节奏</span>
-            <strong>支付 / 续费 / Cron</strong>
-            <small>把账单波动、续费窗口与提醒任务历史放在同一视野里交叉判断。</small>
+            <span>观察维度</span>
+            <strong>支出 / 续费 / Cron</strong>
+            <small>将账单变化、到期窗口和调度结果放在同一视图里交叉判断。</small>
           </div>
         </div>
       </div>
@@ -1177,7 +1493,7 @@
     setInterval(loadDashboardData, 60000);
 
     // --- 订阅花费构成（饼图） ---
-    const PIE_COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#14b8a6','#f97316','#64748b'];
+    const PIE_COLORS = ['#533afd', '#665efd', '#1c1e54', '#ea2261', '#f96bee', '#273951', '#15be53', '#b9b9f9', '#9b6829', '#64748d'];
     let subsPieChart = null;
 
     function renderActiveSubsBreakdown(data) {

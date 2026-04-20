@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>系统配置 - 订阅管理系统</title>
+  <title>系统配置 - SubsTracker</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   ${themeResources} <style>
@@ -53,8 +53,7 @@
       box-shadow: 0 4px 16px -2px rgba(13, 148, 136, 0.1);
     }
     .config-section.inactive {
-      background: var(--color-surface);
-      opacity: 0.6;
+      display: none;
     }
     .config-section h4 {
       font-family: var(--font-display);
@@ -71,8 +70,7 @@
       border-color: var(--color-primary-light);
     }
     html.dark .config-section.inactive {
-      background: var(--dark-bg-primary);
-      opacity: 0.6;
+      display: none;
     }
     html.dark .bg-indigo-50 {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%) !important;
@@ -299,6 +297,158 @@
         align-items: flex-start;
       }
     }
+
+    /* Stripe redesign overrides */
+    .toast {
+      top: 1rem;
+      right: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      box-shadow: var(--color-shadow-deep);
+      font-family: var(--font-body);
+    }
+
+    .toast.success { background: #108c3d; }
+    .toast.error { background: #cb1f59; }
+    .toast.info { background: #533afd; }
+    .toast.warning { background: #9b6829; }
+
+    .config-page-title {
+      margin-bottom: 0.75rem;
+      color: var(--color-heading);
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: -0.04em;
+    }
+
+    .form-label,
+    .config-header h4,
+    .config-section h4 {
+      color: var(--color-label);
+      font-weight: 400;
+    }
+
+    .settings-frame {
+      padding: 1.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--color-shadow);
+    }
+
+    .settings-frame-head {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom-color: var(--color-border);
+    }
+
+    .settings-chip {
+      border-radius: 4px;
+      background: rgba(83, 58, 253, 0.06);
+      color: var(--color-primary);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+    }
+
+    #configForm > .border-b {
+      padding: 1.35rem 1.4rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--color-border) !important;
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 249, 252, 0.96) 100%);
+      box-shadow: none;
+    }
+
+    .config-section {
+      padding: 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: rgba(23, 23, 23, 0.06) 0px 3px 6px;
+    }
+
+    .config-section.active {
+      border-color: var(--color-primary-light);
+      background: linear-gradient(180deg, rgba(83, 58, 253, 0.03) 0%, rgba(255, 255, 255, 0.98) 100%);
+      box-shadow: rgba(50, 50, 93, 0.18) 0px 20px 34px -28px, rgba(0, 0, 0, 0.08) 0px 10px 18px -14px;
+    }
+
+    .config-header {
+      border-bottom-color: var(--color-border-subtle);
+    }
+
+    .settings-tip {
+      border-radius: 6px;
+      border: 1px solid rgba(185, 185, 249, 0.4);
+      background: rgba(83, 58, 253, 0.05);
+      color: var(--color-label);
+    }
+
+    .settings-save {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top-color: var(--color-border);
+    }
+
+    .form-input,
+    .config-section input,
+    .config-section select,
+    .config-section textarea {
+      color: var(--color-heading) !important;
+    }
+
+    html.dark .settings-frame {
+      background: rgba(13, 37, 61, 0.92);
+      border-color: var(--dark-border);
+      box-shadow: var(--color-shadow-deep);
+    }
+
+    html.dark .form-label,
+    html.dark .config-header h4,
+    html.dark .config-section h4 {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .settings-frame-head {
+      border-bottom-color: var(--dark-border);
+    }
+
+    html.dark .settings-chip {
+      background: rgba(185, 185, 249, 0.1);
+      color: #ffffff;
+    }
+
+    html.dark #configForm > .border-b {
+      border-color: var(--dark-border) !important;
+      background: linear-gradient(180deg, rgba(16, 38, 65, 0.92) 0%, rgba(12, 29, 50, 0.94) 100%);
+    }
+
+    html.dark .config-section {
+      border-color: var(--dark-border);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    html.dark .config-section.active {
+      border-color: rgba(185, 185, 249, 0.28);
+      background: rgba(185, 185, 249, 0.08);
+      box-shadow: none;
+    }
+
+    html.dark .settings-tip {
+      border-color: rgba(185, 185, 249, 0.24);
+      background: rgba(185, 185, 249, 0.08);
+      color: var(--dark-text-main);
+    }
+
+    html.dark .settings-save {
+      border-top-color: var(--dark-border);
+    }
+
+    @media (max-width: 767px) {
+      .settings-frame {
+        padding: 1.3rem;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen settings-shell">
@@ -313,10 +463,10 @@
           </div>
           <div class="shell-brand-copy">
             <span>SubsTracker</span>
-            <small>System Configuration</small>
+            <small>System Controls</small>
           </div>
         </div>
-        <span id="systemTimeDisplay" class="shell-time hidden xl:block"></span>
+        <span id="systemTimeDisplay" class="shell-time hidden xl:inline-flex xl:items-center"></span>
           
         <div class="hidden md:flex items-center space-x-2 ml-auto">
           <a href="/admin/dashboard" class="shell-link">
@@ -364,9 +514,9 @@
     <div class="hero-banner settings-hero animate-in mb-6">
       <div class="hero-grid">
         <div>
-          <div class="hero-eyebrow">Editorial System Console</div>
+          <div class="hero-eyebrow">Configuration Workspace</div>
           <h2 class="hero-title">系统配置</h2>
-          <p class="hero-copy">集中管理主题、时区、提醒通道与访问令牌。所有配置仍然实时生效，但现在用更清晰的章节层级呈现，方便巡检敏感字段和发送链路。</p>
+          <p class="hero-copy">集中管理账户、主题、时区与通知渠道，在保存前逐项验证敏感配置和发送链路。</p>
           <div class="hero-meta">
             <span class="hero-pill"><i class="fas fa-moon"></i>主题即时切换</span>
             <span class="hero-pill"><i class="fas fa-clock"></i>UTC 调度一致</span>
@@ -375,14 +525,14 @@
         </div>
         <div class="hero-aside">
           <div class="hero-stat hero-stat-accent">
-            <span>维护原则</span>
+            <span>操作原则</span>
             <strong>先验证 再保存</strong>
-            <small>敏感字段默认隐藏，测试通知入口保留在各配置块中，避免误配置直接上线。</small>
+            <small>敏感字段默认隐藏，测试入口保留在各配置块中，避免误配置直接上线。</small>
           </div>
           <div class="hero-stat">
-            <span>布局重点</span>
+            <span>配置范围</span>
             <strong>账户 / 主题 / 通知</strong>
-            <small>把高频设置放在前部，通知渠道配置维持卡片化展开，便于连续处理。</small>
+            <small>高频设置放在前部，通知渠道维持卡片化展开，便于连续处理。</small>
           </div>
         </div>
       </div>
@@ -1002,44 +1152,22 @@
     }
     
     function toggleNotificationConfigs(enabledNotifiers) {
-      const telegramConfig = document.getElementById('telegramConfig');
-      const notifyxConfig = document.getElementById('notifyxConfig');
-      const webhookConfig = document.getElementById('webhookConfig');
-      const wechatbotConfig = document.getElementById('wechatbotConfig');
-      const emailConfig = document.getElementById('emailConfig');
-      const barkConfig = document.getElementById('barkConfig');
-      const gotifyConfig = document.getElementById('gotifyConfig');
+      const notifierConfigMap = {
+        telegram: document.getElementById('telegramConfig'),
+        notifyx: document.getElementById('notifyxConfig'),
+        webhook: document.getElementById('webhookConfig'),
+        wechatbot: document.getElementById('wechatbotConfig'),
+        email: document.getElementById('emailConfig'),
+        bark: document.getElementById('barkConfig'),
+        gotify: document.getElementById('gotifyConfig')
+      };
 
-      // 重置所有配置区域
-      [telegramConfig, notifyxConfig, webhookConfig, wechatbotConfig, emailConfig, barkConfig, gotifyConfig].forEach(config => {
-        config.classList.remove('active', 'inactive');
-        config.classList.add('inactive');
-      });
-
-      // 激活选中的配置区域
-      enabledNotifiers.forEach(type => {
-        if (type === 'telegram') {
-          telegramConfig.classList.remove('inactive');
-          telegramConfig.classList.add('active');
-        } else if (type === 'notifyx') {
-          notifyxConfig.classList.remove('inactive');
-          notifyxConfig.classList.add('active');
-        } else if (type === 'webhook') {
-          webhookConfig.classList.remove('inactive');
-          webhookConfig.classList.add('active');
-        } else if (type === 'wechatbot') {
-          wechatbotConfig.classList.remove('inactive');
-          wechatbotConfig.classList.add('active');
-        } else if (type === 'email') {
-          emailConfig.classList.remove('inactive');
-          emailConfig.classList.add('active');
-        } else if (type === 'bark') {
-          barkConfig.classList.remove('inactive');
-          barkConfig.classList.add('active');
-        } else if (type === 'gotify') {
-          gotifyConfig.classList.remove('inactive');
-          gotifyConfig.classList.add('active');
-        }
+      Object.entries(notifierConfigMap).forEach(([type, config]) => {
+        if (!config) return;
+        const isEnabled = enabledNotifiers.includes(type);
+        config.classList.toggle('active', isEnabled);
+        config.classList.toggle('inactive', !isEnabled);
+        config.hidden = !isEnabled;
       });
     }
 
@@ -1050,6 +1178,10 @@
         toggleNotificationConfigs(enabledNotifiers);
       });
     });
+
+    toggleNotificationConfigs(
+      Array.from(document.querySelectorAll('input[name="enabledNotifiers"]:checked')).map(cb => cb.value)
+    );
     
     document.getElementById('configForm').addEventListener('submit', async (e) => {
       e.preventDefault();
