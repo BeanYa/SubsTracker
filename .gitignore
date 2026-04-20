@@ -1,1 +1,13 @@
-node_modules
+node_modules/
+
+# Build artifacts
+dist/
+
+# AI assistant artifacts
+.agents/
+.claude/
+.kilo/
+.kilocode/
+src/.claude/
+skills-lock.json
+DESIGN.md
