@@ -523,38 +523,43 @@
     }
 
     .action-buttons-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+      width: 100%;
     }
 
     .list-table .overflow-x-auto {
-      overflow-x: auto;
-      overflow-y: hidden;
+      overflow: visible;
     }
 
     .list-table .responsive-table {
-      width: max-content;
-      min-width: 100%;
-      table-layout: auto;
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
     }
 
     .list-table th:last-child,
     .list-table td:last-child {
-      min-width: 23rem;
+      width: 20%;
     }
 
+    .list-table td[data-label="提醒"],
     .list-table td[data-label="状态"] {
       white-space: nowrap;
     }
 
+    .list-table td[data-label="提醒"] .td-content-wrapper,
+    .list-table td[data-label="提醒"] .td-content-wrapper > * {
+      white-space: nowrap;
+    }
+
     .list-table td[data-label="操作"] .td-content-wrapper {
-      width: auto;
+      width: 100%;
     }
 
     .list-table td[data-label="操作"] .action-buttons-wrapper {
-      min-width: max-content;
-      flex-wrap: nowrap;
+      min-width: 0;
     }
 
     .action-btn {
@@ -572,6 +577,11 @@
       box-shadow: none;
       transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
       white-space: nowrap;
+      width: 100%;
+      min-width: 0;
+      justify-content: center;
+      padding: 0.46rem 0.3rem;
+      gap: 0.25rem;
     }
 
     .action-btn:hover {
@@ -684,10 +694,11 @@
 
       .list-table th:last-child,
       .list-table td:last-child {
-        min-width: 0;
+        width: auto;
       }
 
       .list-table td[data-label="操作"] .action-buttons-wrapper {
+        display: flex;
         min-width: 0;
         flex-wrap: wrap;
       }
@@ -765,6 +776,8 @@
     .status-pill {
       padding: 0.3rem 0.55rem;
       letter-spacing: 0.02em;
+      flex-wrap: nowrap;
+      white-space: nowrap;
     }
 
     .status-pill.ok {
@@ -793,10 +806,15 @@
     }
 
     .action-btn {
-      padding: 0.42rem 0.75rem;
       border: 1px solid var(--color-border);
       background: #ffffff;
       color: var(--color-label);
+      width: 100%;
+      min-width: 0;
+      justify-content: center;
+      padding: 0.46rem 0.3rem;
+      gap: 0.25rem;
+      white-space: nowrap;
     }
 
     .action-btn:hover {
@@ -1235,25 +1253,25 @@
         <table class="w-full divide-y divide-gray-200 responsive-table">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 23%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 21%;">
                 名称
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 13%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 14%;">
                 类型
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 18%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 17%;">
                 到期 <i class="fas fa-sort-up ml-1 text-indigo-500" title="按到期时间升序排列"></i>
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 10%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 9%;">
                 金额
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 13%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 10%;">
                 提醒
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 10%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 9%;">
                 状态
               </th>
-              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 13%;">
+              <th scope="col" class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider" style="width: 20%;">
                 操作
               </th>
             </tr>
