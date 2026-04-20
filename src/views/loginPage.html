@@ -197,6 +197,214 @@
       .login-orb { animation: none; }
       .login-box { animation: none; opacity: 1; }
     }
+
+    .login-container {
+      background: linear-gradient(135deg, #0d1117 0%, #141a22 45%, #1a202a 100%);
+    }
+
+    .login-orb-1 { background: #c18f57; opacity: 0.2; }
+    .login-orb-2 { background: #5f7890; opacity: 0.18; }
+    .login-orb-3 { background: #8f6fb0; opacity: 0.08; }
+
+    .login-grid {
+      background-image:
+        linear-gradient(rgba(215,176,122,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(215,176,122,0.04) 1px, transparent 1px);
+    }
+
+    .login-shell {
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 28rem);
+      gap: 1.25rem;
+      width: min(1120px, calc(100vw - 2rem));
+      align-items: stretch;
+    }
+
+    .login-editorial {
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(215, 176, 122, 0.16);
+      background: linear-gradient(145deg, rgba(15, 20, 27, 0.92) 0%, rgba(18, 24, 32, 0.88) 100%);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+      color: #f4ecdf;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 34rem;
+    }
+
+    .login-editorial::before {
+      content: '';
+      position: absolute;
+      right: -12%;
+      bottom: -18%;
+      width: 15rem;
+      height: 15rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(193, 143, 87, 0.24), transparent 68%);
+      pointer-events: none;
+    }
+
+    .login-editorial-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: #d7b07a;
+      margin-bottom: 1rem;
+    }
+
+    .login-editorial h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 5vw, 4rem);
+      line-height: 1.02;
+      max-width: 9ch;
+    }
+
+    .login-editorial p {
+      margin-top: 1rem;
+      max-width: 34rem;
+      color: #b6a590;
+      font-size: 1rem;
+    }
+
+    .login-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 2rem;
+    }
+
+    .login-feature-card {
+      padding: 1rem;
+      border-radius: 1.2rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(215, 176, 122, 0.12);
+    }
+
+    .login-feature-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: #f4ecdf;
+    }
+
+    .login-feature-card span {
+      display: block;
+      margin-top: 0.35rem;
+      color: #b6a590;
+      font-size: 0.84rem;
+      line-height: 1.55;
+    }
+
+    .login-editorial-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(215, 176, 122, 0.12);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7a6f63;
+    }
+
+    .login-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.2rem;
+      border-radius: 2rem;
+      background: rgba(255, 249, 241, 0.92);
+      border: 1px solid rgba(109, 82, 47, 0.12);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
+    }
+
+    .login-icon-ring {
+      background: linear-gradient(135deg, #9c7340 0%, #c18f57 100%);
+      box-shadow: 0 14px 28px rgba(156, 115, 64, 0.28);
+    }
+
+    .login-icon-ring::before {
+      background: linear-gradient(135deg, rgba(193, 143, 87, 0.34), transparent);
+    }
+
+    .input-field {
+      border-color: rgba(109, 82, 47, 0.14);
+      background: rgba(255,255,255,0.72);
+    }
+
+    .input-field:focus {
+      border-color: #9c7340;
+      box-shadow: 0 0 0 3px rgba(156, 115, 64, 0.12);
+      background: rgba(255,255,255,0.92);
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #9c7340 0%, #c18f57 100%);
+    }
+
+    html.dark .login-box {
+      background: rgba(18, 24, 32, 0.94);
+      border-color: rgba(215, 176, 122, 0.14);
+    }
+
+    html.dark .login-box .text-gray-800 {
+      color: #f4ecdf;
+    }
+
+    html.dark .login-box .text-gray-500,
+    html.dark .login-box .text-gray-600,
+    html.dark .login-box .text-gray-700 {
+      color: #b6a590;
+    }
+
+    html.dark .input-field {
+      background: rgba(36, 48, 65, 0.55);
+      border-color: rgba(215, 176, 122, 0.16);
+      color: #f4ecdf;
+    }
+
+    html.dark .input-field:focus {
+      border-color: #d7b07a;
+      box-shadow: 0 0 0 3px rgba(215, 176, 122, 0.12);
+      background: rgba(36, 48, 65, 0.82);
+    }
+
+    @media (max-width: 1023px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-editorial {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .login-shell {
+        width: min(100%, calc(100vw - 1.5rem));
+      }
+
+      .login-editorial {
+        padding: 1.4rem;
+      }
+
+      .login-feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .login-box {
+        padding: 1.6rem;
+      }
+    }
   </style>
 </head>
 <body class="login-container flex items-center justify-center">
@@ -206,39 +414,71 @@
   <div class="login-orb login-orb-3"></div>
   <div class="login-grid"></div>
 
-  <div class="login-box p-8 sm:p-10 rounded-2xl w-full max-w-md relative z-10">
-    <div class="text-center mb-8">
-      <div class="login-icon-ring">
-        <i class="fas fa-calendar-check text-white text-2xl"></i>
+  <div class="login-shell">
+    <div class="login-editorial">
+      <div>
+        <div class="login-editorial-kicker">Editorial Access</div>
+        <h1>让每一笔订阅 都有秩序。</h1>
+        <p>登录后进入统一控制台，查看费用脉冲、续费窗口与多渠道提醒状态，用更清晰的界面维护你的全部订阅。</p>
+        <div class="login-feature-grid">
+          <div class="login-feature-card">
+            <strong>费用脉冲</strong>
+            <span>月度与年度支出汇总在同一仪表盘展示，快速定位成本上升点。</span>
+          </div>
+          <div class="login-feature-card">
+            <strong>续费视野</strong>
+            <span>按到期顺序管理服务，把最需要处理的订阅放在最前面。</span>
+          </div>
+          <div class="login-feature-card">
+            <strong>多渠道提醒</strong>
+            <span>Telegram、Webhook、邮件等配置集中管理，支持逐项测试。</span>
+          </div>
+          <div class="login-feature-card">
+            <strong>浅深主题</strong>
+            <span>界面支持主题切换，适合长期作为个人订阅控制台使用。</span>
+          </div>
+        </div>
       </div>
-      <h1 class="text-2xl font-bold text-gray-800" style="font-family:var(--font-display);letter-spacing:-0.025em">订阅管理系统</h1>
-      <p class="text-gray-500 mt-2 text-sm" style="font-family:var(--font-body)">登录管理您的订阅提醒</p>
+      <div class="login-editorial-footer">
+        <span>SubsTracker</span>
+        <span>Designed For Daily Ops</span>
+      </div>
     </div>
 
-    <form id="loginForm" class="space-y-5">
-      <div>
-        <label for="username" class="block text-sm font-medium text-gray-600 mb-1.5">
-          用户名
-        </label>
-        <input type="text" id="username" name="username" required autocomplete="username"
-          class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
+    <div class="login-box relative">
+      <div class="text-center mb-8">
+        <div class="login-icon-ring">
+          <i class="fas fa-calendar-check text-white text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800" style="font-family:var(--font-display);letter-spacing:-0.025em">订阅管理系统</h2>
+        <p class="text-gray-500 mt-2 text-sm" style="font-family:var(--font-body)">登录管理您的订阅提醒</p>
       </div>
 
-      <div>
-        <label for="password" class="block text-sm font-medium text-gray-600 mb-1.5">
-          密码
-        </label>
-        <input type="password" id="password" name="password" required autocomplete="current-password"
-          class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
-      </div>
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-600 mb-1.5">
+            用户名
+          </label>
+          <input type="text" id="username" name="username" required autocomplete="username"
+            class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
+        </div>
 
-      <button type="submit"
-        class="login-btn w-full py-3 rounded-xl text-white font-medium mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 transition-all duration-200 hover:shadow-lg">
-        登录
-      </button>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-600 mb-1.5">
+            密码
+          </label>
+          <input type="password" id="password" name="password" required autocomplete="current-password"
+            class="input-field w-full px-4 py-3 rounded-xl text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
+        </div>
 
-      <div id="errorMsg" class="text-red-500 text-center text-sm" style="min-height:1.25rem"></div>
-    </form>
+        <button type="submit"
+          class="login-btn w-full py-3 rounded-xl text-white font-medium mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 transition-all duration-200 hover:shadow-lg">
+          登录
+        </button>
+
+        <div id="errorMsg" class="text-red-500 text-center text-sm" style="min-height:1.25rem"></div>
+      </form>
+    </div>
   </div>
 
   <script>

@@ -8,216 +8,785 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   ${themeResources}  <style>
-    /* === 统计卡片样式 === */
-    .stat-card{
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(16px) saturate(1.1);
-      -webkit-backdrop-filter: blur(16px) saturate(1.1);
-      border: 1px solid rgba(255,255,255,0.7);
-      border-radius: 18px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02), 0 8px 20px rgba(0, 0, 0, 0.04);
-      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    .dashboard-shell {
+      position: relative;
+      z-index: 2;
+    }
+
+    .dashboard-hero .hero-title {
+      max-width: 9ch;
+    }
+
+    .dashboard-hero .hero-copy {
+      max-width: 54ch;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
       position: relative;
       overflow: hidden;
+      border: 1px solid var(--color-border);
+      border-radius: 1.75rem;
+      background: rgba(255, 251, 245, 0.74);
+      box-shadow: var(--color-shadow);
     }
-    .stat-card::after {
-      content: '';
-      position: absolute;
-      top: -30%;
-      right: -10%;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      opacity: 0.04;
-      pointer-events: none;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .stat-card:nth-child(1)::after { background: var(--color-primary); }
-    .stat-card:nth-child(2)::after { background: var(--color-accent); }
-    .stat-card:nth-child(3)::after { background: #8b5cf6; }
-    .stat-card:hover::after { opacity: 0.08; transform: scale(1.2); }
+
     .stat-card::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light), var(--color-accent));
-      opacity: 0;
-      transition: opacity 0.4s ease;
-      border-radius: 18px 18px 0 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
     }
-    .stat-card:hover::before { opacity: 1; }
-    @media (prefers-reduced-motion: no-preference) {
-      .stat-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.1), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
-      }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      right: -15%;
+      bottom: -28%;
+      width: 11rem;
+      height: 11rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(156, 115, 64, 0.12), transparent 70%);
+      pointer-events: none;
     }
-    .stat-card-header{
+
+    html.dark .stat-card {
+      background: var(--dark-bg-secondary);
+      border-color: var(--dark-border);
+      box-shadow: var(--dark-shadow);
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 14.5rem;
+      padding: 1.4rem;
+    }
+
+    .metric-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .metric-card-icon {
+      width: 3rem;
+      height: 3rem;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 1rem;
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--color-primary);
+      border: 1px solid rgba(156, 115, 64, 0.12);
+    }
+
+    html.dark .metric-card-icon {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--color-primary-light);
+      border-color: var(--dark-border);
+    }
+
+    .metric-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-top: 1rem;
       color: var(--color-text-muted);
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-bottom: 0.75rem;
-      font-family: var(--font-display);
+      font-size: 0.82rem;
     }
-    .stat-card-value{
-      font-size: 2.25rem;
+
+    .metric-card-footer strong {
+      color: var(--color-text);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-card-header {
+      color: var(--color-text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 0.85rem;
+      font-family: var(--font-mono);
+    }
+
+    .stat-card-value {
+      font-size: clamp(2.35rem, 4vw, 3.2rem);
+      font-weight: 900;
+      color: var(--color-text);
+      margin-bottom: 0.4rem;
+      font-family: var(--font-display);
+      letter-spacing: -0.05em;
+      line-height: 1.02;
+    }
+
+    .stat-card-subtitle {
+      color: var(--color-text-subtle);
+      font-size: 0.84rem;
+      font-weight: 500;
+    }
+
+    .stat-card-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+      padding: 0.42rem 0.8rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card-trend.up {
+      color: #2a5b43;
+      background: rgba(61, 125, 93, 0.14);
+    }
+
+    .stat-card-trend.down {
+      color: #8d4037;
+      background: rgba(157, 77, 68, 0.14);
+    }
+
+    .stat-card-trend.flat {
+      color: #4d657b;
+      background: rgba(102, 127, 149, 0.14);
+    }
+
+    html.dark .stat-card-header {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .stat-card-value {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .stat-card-subtitle {
+      color: var(--dark-text-subtle);
+    }
+
+    html.dark .metric-card-footer {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .metric-card-footer strong {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .stat-card-trend.up {
+      color: #b6dcc8;
+      background: rgba(61, 125, 93, 0.18);
+    }
+
+    html.dark .stat-card-trend.down {
+      color: #efb8b1;
+      background: rgba(157, 77, 68, 0.2);
+    }
+
+    html.dark .stat-card-trend.flat {
+      color: #c6d2de;
+      background: rgba(102, 127, 149, 0.18);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    html.dark .panel-header {
+      border-bottom-color: var(--dark-border-subtle);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    .panel-title i {
+      width: 2rem;
+      height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+    }
+
+    html.dark .panel-title {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .panel-title i {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .icon-emerald { color: #3d7d5d; }
+    .icon-blue { color: #4f6276; }
+    .icon-amber { color: #b78635; }
+    .icon-indigo { color: #7c5f95; }
+    .icon-purple { color: #8f6fb0; }
+    .icon-green { color: #537a63; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.4rem 0.82rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(156, 115, 64, 0.1);
+      color: var(--color-primary);
+      border: 1px solid rgba(156, 115, 64, 0.14);
+    }
+
+    html.dark .badge {
+      background: rgba(215, 176, 122, 0.12);
+      color: var(--color-primary-light);
+      border-color: rgba(215, 176, 122, 0.18);
+    }
+
+    .list-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.05rem;
+      border-radius: 1.15rem;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.32);
+      margin-bottom: 0.7rem;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .list-item:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.58);
+      border-color: var(--color-border);
+    }
+
+    .list-item-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-item-name {
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 0.35rem;
+      font-family: var(--font-display);
+      font-size: 1rem;
+    }
+
+    .list-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--color-text-muted);
+    }
+
+    .list-item-amount {
+      text-align: right;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      font-family: var(--font-display);
+      letter-spacing: -0.02em;
+    }
+
+    .list-item-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.22rem 0.64rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: rgba(102, 127, 149, 0.12);
+      color: var(--color-accent-hover);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    html.dark .list-item {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    html.dark .list-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--dark-border);
+    }
+
+    html.dark .list-item-name {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .list-item-meta {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .list-item-badge {
+      background: rgba(102, 127, 149, 0.18);
+      color: #d0d9e3;
+    }
+
+    .ranking-item {
+      margin-bottom: 0.85rem;
+      padding: 0.95rem 1rem;
+      border-radius: 1.1rem;
+      background: rgba(255, 255, 255, 0.28);
+      border: 1px solid transparent;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .ranking-item:hover {
+      background: rgba(255, 255, 255, 0.46);
+      border-color: var(--color-border);
+    }
+
+    .ranking-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .ranking-item-name {
+      font-weight: 700;
+      color: var(--color-text);
+      font-family: var(--font-display);
+      font-size: 1rem;
+    }
+
+    .ranking-item-value {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .ranking-item-amount {
       font-weight: 800;
       color: var(--color-text);
-      margin-bottom: 0.25rem;
       font-family: var(--font-display);
-      letter-spacing: -0.03em;
-      line-height: 1.1;
     }
-    .stat-card-subtitle{color:var(--color-text-subtle);font-size:0.8125rem;font-weight:500}
-    .stat-card-trend{display:inline-flex;align-items:center;gap:0.375rem;font-size:0.8125rem;margin-top:0.75rem;padding:0.375rem 0.75rem;border-radius:8px;font-weight:600;font-family:var(--font-display)}
-    .stat-card-trend.up{color:#10b981;background:#d1fae5}
-    .stat-card-trend.down{color:#ef4444;background:#fee2e2}
-    .stat-card-trend.flat{color:#64748b;background:#f1f5f9}
-    .list-item{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1.125rem;border-radius:12px;transition:background 0.2s ease,transform 0.25s cubic-bezier(0.22,1,0.36,1);margin-bottom:0.375rem}
-    .list-item:hover{background:rgba(13,148,136,0.04);transform:translateX(4px)}
-    .list-item:not(:last-child){border-bottom:none}
-    .list-item-content{flex:1}
-    .list-item-name{font-weight:600;color:var(--color-text);margin-bottom:0.25rem;font-family:var(--font-display);font-size:0.9375rem}
-    .list-item-meta{display:flex;align-items:center;gap:0.875rem;font-size:0.8125rem;color:var(--color-text-muted);flex-wrap:wrap}
-    .list-item-amount{font-size:1.0625rem;font-weight:700;color:var(--color-primary);font-family:var(--font-display);letter-spacing:-0.01em}
-    .list-item-badge{display:inline-block;padding:0.2rem 0.625rem;border-radius:6px;font-size:0.6875rem;font-weight:600;background:rgba(99,102,241,0.08);color:#6366f1;letter-spacing:0.02em;text-transform:uppercase}
-    .ranking-item{margin-bottom:1.125rem}
-    .ranking-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
-    .ranking-item-name{font-weight:600;color:var(--color-text);font-family:var(--font-display);font-size:0.9375rem}
-    .ranking-item-value{display:flex;align-items:center;gap:0.5rem;font-size:0.875rem}
-    .ranking-item-amount{font-weight:700;color:var(--color-text);font-family:var(--font-display)}
-    .ranking-item-percentage{color:var(--color-primary);font-weight:600;font-size:0.8125rem}
-    .ranking-progress{width:100%;height:5px;background:var(--color-border);border-radius:4px;overflow:hidden}
-    .ranking-progress-bar{height:100%;border-radius:4px;transition:width 0.8s cubic-bezier(0.22, 1, 0.36, 1)}
-    .ranking-progress-bar.color-1{background:linear-gradient(90deg,var(--color-primary),#2dd4bf)}
-    .ranking-progress-bar.color-2{background:linear-gradient(90deg,#10b981,#34d399)}
-    .ranking-progress-bar.color-3{background:linear-gradient(90deg,var(--color-accent),#fbbf24)}
-    .ranking-progress-bar.color-4{background:linear-gradient(90deg,#ef4444,#f87171)}
-    .ranking-progress-bar.color-5{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
-    .empty-state{text-align:center;padding:3rem 1rem;color:var(--color-text-muted)}
-    .empty-state-icon{font-size:3rem;margin-bottom:1rem;opacity:0.35}
-    .empty-state-text{font-size:0.875rem;font-weight:500}
-    /* === 订阅花费构成卡片 === */
-    .period-amount{font-size:2.5rem;font-weight:800;color:var(--color-text);font-family:var(--font-display);letter-spacing:-0.03em;margin-bottom:0.25rem;line-height:1.1}
-    html.dark .period-amount{color:var(--dark-text-main)}
-    .period-subtitle{font-size:0.8125rem;color:var(--color-text-subtle);font-weight:500}
-    html.dark .period-subtitle{color:var(--dark-text-subtle)}
-    .legend-row{display:flex;align-items:center;gap:0.5rem;padding:0.375rem 0;font-size:0.8125rem}
-    .legend-dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
-    .legend-name{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text);font-size:0.8125rem}
-    .legend-amount{white-space:nowrap;color:var(--color-text-muted);font-size:0.75rem}
-    .legend-pct{font-weight:700;min-width:36px;text-align:right;color:var(--color-primary);font-size:0.8125rem;font-family:var(--font-display)}
-    html.dark .legend-name{color:var(--dark-text-main)}
-    html.dark .legend-amount{color:var(--dark-text-muted)}
-    html.dark .legend-pct{color:var(--color-primary-light,#a5b4fc)}
-    /* === Dashboard 暗黑模式修复 === */
-    html.dark .stat-card {
-      background: rgba(30, 41, 59, 0.55);
-      border-color: rgba(255,255,255,0.06);
-      backdrop-filter: blur(16px) saturate(1.1);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+
+    .ranking-item-percentage {
+      color: var(--color-primary);
+      font-weight: 700;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
     }
-    html.dark .stat-card::before { background: linear-gradient(90deg, var(--color-primary-light), var(--color-accent)); }
-    html.dark .stat-card-header { color: var(--dark-text-muted); }
-    html.dark .stat-card-value { color: var(--dark-text-main); }
-    html.dark .stat-card-subtitle { color: var(--dark-text-subtle); }
-    html.dark .stat-card-trend.flat { background: var(--dark-bg-tertiary); color: var(--dark-text-muted); }
-    html.dark .stat-card-trend.up { background: rgba(16, 185, 129, 0.15); }
-    html.dark .stat-card-trend.down { background: rgba(239, 68, 68, 0.15); }
-    html.dark .list-item:hover { background: rgba(20, 184, 166, 0.08); }
-    html.dark .list-item-name { color: var(--dark-text-main); }
-    html.dark .list-item-meta { color: var(--dark-text-muted); }
-    html.dark .list-item-badge { background: rgba(99,102,241,0.12); color:#a5b4fc }
-    html.dark .ranking-item-name { color: var(--dark-text-main); }
-    html.dark .ranking-item-amount { color: #e2e8f0; }
-    html.dark .ranking-progress { background: var(--dark-border); }
-    html.dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.15) !important; color: #a5b4fc !important; }
-    html.dark .text-indigo-800 { color: #c7d2fe !important; }
-    .loading-skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:loading 1.5s infinite;height:100px;border-radius:14px}
-    html.dark .loading-skeleton { background: linear-gradient(90deg, var(--dark-bg-tertiary) 25%, #475569 50%, var(--dark-bg-tertiary) 75%); }
-    @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    .ranking-progress {
+      width: 100%;
+      height: 0.45rem;
+      background: rgba(109, 82, 47, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .ranking-progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .ranking-progress-bar.color-1 { background: linear-gradient(90deg, var(--color-primary), #d9b17a); }
+    .ranking-progress-bar.color-2 { background: linear-gradient(90deg, #4f6276, #7e97ad); }
+    .ranking-progress-bar.color-3 { background: linear-gradient(90deg, #3d7d5d, #7fb18f); }
+    .ranking-progress-bar.color-4 { background: linear-gradient(90deg, #9d4d44, #d27d73); }
+    .ranking-progress-bar.color-5 { background: linear-gradient(90deg, #7c5f95, #b197c9); }
+
+    html.dark .ranking-item {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    html.dark .ranking-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--dark-border);
+    }
+
+    html.dark .ranking-item-name,
+    html.dark .ranking-item-amount {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .ranking-progress {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.35;
+    }
+
+    .empty-state-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .breakdown-layout {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .breakdown-total {
+      flex-shrink: 0;
+      min-width: 11rem;
+      padding: 1.15rem;
+      border-radius: 1.2rem;
+      background: rgba(255, 255, 255, 0.36);
+      border: 1px solid rgba(156, 115, 64, 0.12);
+      text-align: center;
+    }
+
+    .breakdown-chart {
+      flex: 1;
+      min-width: 13rem;
+      max-width: 18rem;
+      margin: 0 auto;
+    }
+
+    .breakdown-legend {
+      flex: 1;
+      min-width: 14rem;
+    }
+
+    .period-amount {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--color-text);
+      font-family: var(--font-display);
+      letter-spacing: -0.04em;
+      margin-bottom: 0.25rem;
+      line-height: 1.05;
+    }
+
+    .period-subtitle {
+      font-size: 0.82rem;
+      color: var(--color-text-subtle);
+      font-weight: 500;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.55rem 0;
+      font-size: 0.82rem;
+    }
+
+    .legend-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .legend-name {
+      flex: 1;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--color-text);
+      font-size: 0.82rem;
+    }
+
+    .legend-amount {
+      white-space: nowrap;
+      color: var(--color-text-muted);
+      font-size: 0.76rem;
+    }
+
+    .legend-pct {
+      min-width: 3.2rem;
+      text-align: right;
+      color: var(--color-primary);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    html.dark .period-amount,
+    html.dark .legend-name {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .period-subtitle,
+    html.dark .legend-amount {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .legend-pct {
+      color: var(--color-primary-light);
+    }
+
+    .scheduler-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .scheduler-unit {
+      padding: 1rem 1.05rem;
+      border-radius: 1.15rem;
+      background: rgba(255, 255, 255, 0.34);
+      border: 1px solid transparent;
+    }
+
+    .scheduler-unit-wide {
+      grid-column: span 2;
+    }
+
+    .scheduler-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-text-subtle);
+    }
+
+    .scheduler-value {
+      margin-top: 0.55rem;
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .scheduler-detail {
+      margin-top: 0.45rem;
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+    }
+
+    .scheduler-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+    }
+
+    .scheduler-badge.sent {
+      color: #2a5b43;
+      background: rgba(61, 125, 93, 0.14);
+    }
+
+    .scheduler-badge.idle {
+      color: #8c6428;
+      background: rgba(183, 134, 53, 0.14);
+    }
+
+    .scheduler-history-item {
+      padding: 0.95rem 1rem;
+      border-radius: 1rem;
+      border-left: 2px solid var(--color-primary);
+      background: rgba(255, 255, 255, 0.28);
+      margin-bottom: 0.7rem;
+    }
+
+    .scheduler-history-title {
+      font-weight: 700;
+      color: var(--color-text);
+      font-size: 0.9rem;
+    }
+
+    .scheduler-history-detail {
+      color: var(--color-text-muted);
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+    }
+
+    html.dark .scheduler-unit,
+    html.dark .scheduler-history-item {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    html.dark .scheduler-label {
+      color: var(--dark-text-subtle);
+    }
+
+    html.dark .scheduler-value,
+    html.dark .scheduler-history-title {
+      color: var(--dark-text-main);
+    }
+
+    html.dark .scheduler-detail,
+    html.dark .scheduler-history-detail {
+      color: var(--dark-text-muted);
+    }
+
+    html.dark .scheduler-badge.sent {
+      color: #b6dcc8;
+      background: rgba(61, 125, 93, 0.18);
+    }
+
+    html.dark .scheduler-badge.idle {
+      color: #e9d2a6;
+      background: rgba(183, 134, 53, 0.18);
+    }
+
+    .loading-skeleton {
+      height: 7.5rem;
+      border-radius: 1.5rem;
+      background: linear-gradient(90deg, rgba(233, 224, 212, 0.7) 25%, rgba(255, 249, 241, 0.9) 50%, rgba(233, 224, 212, 0.7) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
+
+    html.dark .loading-skeleton {
+      background: linear-gradient(90deg, rgba(36, 48, 65, 0.7) 25%, rgba(46, 61, 80, 0.92) 50%, rgba(36, 48, 65, 0.7) 75%);
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 1023px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .scheduler-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .scheduler-unit-wide {
+        grid-column: auto;
+      }
+
+      .list-item {
+        flex-direction: column;
+      }
+
+      .list-item-amount {
+        text-align: left;
+      }
+
+      .breakdown-total,
+      .breakdown-chart,
+      .breakdown-legend {
+        min-width: 100%;
+        max-width: none;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .loading-skeleton{animation:none;background:#f1f5f9}
-      html.dark .loading-skeleton{animation:none;background:var(--dark-bg-tertiary)}
+      .loading-skeleton {
+        animation: none;
+      }
+
+      .list-item:hover,
+      .ranking-item:hover {
+        transform: none;
+      }
     }
-    /* === 页面标题 === */
-    .page-title{font-size:1.75rem;font-weight:800;color:var(--color-text);font-family:var(--font-display);letter-spacing:-0.03em}
-    .page-subtitle{color:var(--color-text-muted);font-size:0.875rem;margin-top:0.375rem;font-weight:500}
-    html.dark .page-title{color:var(--dark-text-main)}
-    html.dark .page-subtitle{color:var(--dark-text-muted)}
-    /* === 面板头部 === */
-    .panel-header{padding:1.125rem 1.5rem;border-bottom:1px solid var(--color-border-subtle);display:flex;align-items:center;justify-content:space-between}
-    html.dark .panel-header{border-bottom-color:var(--dark-border)}
-    .panel-title{display:flex;align-items:center;gap:0.75rem;font-family:var(--font-display);font-weight:600;font-size:0.9375rem;color:var(--color-text)}
-    html.dark .panel-title{color:var(--dark-text-main)}
-    .panel-title i{font-size:0.875rem;opacity:0.8}
-    /* === 标签 === */
-    .badge{display:inline-flex;align-items:center;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.6875rem;font-weight:600;background:rgba(99,102,241,0.07);color:#6366f1;border:1px solid rgba(99,102,241,0.12);letter-spacing:0.02em;text-transform:uppercase}
-    html.dark .badge{background:rgba(99,102,241,0.1);color:#a5b4fc;border-color:rgba(99,102,241,0.2)}
-    /* === 面板图标色彩 === */
-    .icon-emerald{color:#10b981}
-    .icon-blue{color:#3b82f6}
-    .icon-amber{color:#f59e0b}
-    .icon-indigo{color:#6366f1}
-    .icon-purple{color:#8b5cf6}
-    .icon-green{color:#22c55e}
   </style>
 </head>
-<body class="bg-gray-50">
-  <nav class="bg-white shadow-md relative z-50">
+<body class="bg-gray-50 dashboard-shell">
+  <nav class="relative z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center shrink-0">
-          <div class="flex items-center">
-            <i class="fas fa-calendar-check text-indigo-600 text-2xl mr-2"></i>
-            <span class="font-bold text-xl text-gray-800">订阅管理系统</span>
+      <div class="shell-nav-inner">
+        <div class="shell-brand">
+          <div class="shell-brand-mark">
+            <i class="fas fa-chart-line"></i>
           </div>
-          <span id="systemTimeDisplay" class="ml-4 text-base text-indigo-600 font-normal hidden md:block pt-1"></span>
+          <div class="shell-brand-copy">
+            <span>SubsTracker</span>
+            <small>Editorial Dashboard</small>
+          </div>
         </div>
+        <span id="systemTimeDisplay" class="shell-time hidden xl:block"></span>
         
-        <div class="hidden md:flex items-center space-x-4 ml-auto">
-          <a href="/admin/dashboard" class="text-indigo-600 border-b-2 border-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition">
-            <i class="fas fa-chart-line mr-1"></i>仪表盘
+        <div class="hidden md:flex items-center space-x-2 ml-auto">
+          <a href="/admin/dashboard" class="shell-link shell-link-active">
+            <i class="fas fa-chart-line"></i>仪表盘
           </a>
-          <a href="/admin" class="text-gray-700 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 px-3 py-2 rounded-md text-sm font-medium transition">
-            <i class="fas fa-list mr-1"></i>订阅列表
+          <a href="/admin" class="shell-link">
+            <i class="fas fa-list"></i>订阅列表
           </a>
-          <a href="/admin/config" class="text-gray-700 hover:text-gray-900 border-b-2 border-transparent hover:border-gray-300 px-3 py-2 rounded-md text-sm font-medium transition">
-            <i class="fas fa-cog mr-1"></i>系统配置
+          <a href="/admin/config" class="shell-link">
+            <i class="fas fa-cog"></i>系统配置
           </a>
-          <a href="/api/logout" class="text-gray-700 hover:text-red-600 border-b-2 border-transparent hover:border-red-300 px-3 py-2 rounded-md text-sm font-medium transition">
-            <i class="fas fa-sign-out-alt mr-1"></i>退出登录
+          <a href="/api/logout" class="shell-link">
+            <i class="fas fa-sign-out-alt"></i>退出登录
           </a>
         </div>
 
         <div class="flex items-center md:hidden ml-auto">
-          <button id="mobile-menu-btn" type="button" aria-expanded="false" aria-label="切换导航菜单" class="text-gray-600 hover:text-indigo-600 focus-visible:ring-2 focus-visible:ring-indigo-500 p-2 rounded-md hover:bg-gray-100 active:bg-gray-200 transition-colors">
+          <button id="mobile-menu-btn" type="button" aria-expanded="false" aria-label="切换导航菜单" class="shell-menu-btn focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors">
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
       </div>
     </div>
 
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-b border-gray-200 w-full">
+    <div id="mobile-menu" class="shell-mobile-panel hidden md:hidden w-full">
       <div class="px-4 pt-2 pb-4 space-y-2">
-        <div id="mobileTimeDisplay" class="px-3 py-2 text-xs text-indigo-600 text-right border-b border-gray-100 mb-2"></div>
-        <a href="/admin/dashboard" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100 transition-colors">
+        <div id="mobileTimeDisplay" class="shell-time text-right mb-2"></div>
+        <a href="/admin/dashboard" class="shell-mobile-link shell-mobile-link-active">
           <i class="fas fa-chart-line w-6 text-center mr-2"></i>仪表盘
         </a>
-        <a href="/admin" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100 transition-colors">
+        <a href="/admin" class="shell-mobile-link">
           <i class="fas fa-list w-6 text-center mr-2"></i>订阅列表
         </a>
-        <a href="/admin/config" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100 transition-colors">
+        <a href="/admin/config" class="shell-mobile-link">
           <i class="fas fa-cog w-6 text-center mr-2"></i>系统配置
         </a>
-        <a href="/api/logout" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-red-50 hover:text-red-600 active:bg-red-100 transition-colors">
+        <a href="/api/logout" class="shell-mobile-link">
           <i class="fas fa-sign-out-alt w-6 text-center mr-2"></i>退出登录
         </a>
       </div>
@@ -225,12 +794,34 @@
   </nav>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8 page-header animate-in">
-      <h2 class="page-title">📊 仪表板</h2>
-      <p class="page-subtitle">订阅费用和活动概览（统计金额已折合为 CNY）</p>
+    <div class="hero-banner dashboard-hero animate-in mb-8">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-eyebrow">Editorial Analytics Console</div>
+          <h2 class="hero-title">订阅脉冲 仪表盘</h2>
+          <p class="hero-copy">把费用、续费风险与提醒任务状态压缩到同一张控制台里，用更明确的层级判断哪些服务正在推高成本，哪些提醒链路需要优先关注。</p>
+          <div class="hero-meta">
+            <span class="hero-pill"><i class="fas fa-yen-sign"></i>统一折算 CNY</span>
+            <span class="hero-pill"><i class="fas fa-sync-alt"></i>每 60 秒自动刷新</span>
+            <span class="hero-pill"><i class="fas fa-moon"></i>支持浅深主题</span>
+          </div>
+        </div>
+        <div class="hero-aside">
+          <div class="hero-stat hero-stat-accent">
+            <span>巡检焦点</span>
+            <strong>续费前 7 天</strong>
+            <small>优先处理即将扣款的服务，避免成本突增和重复订阅。</small>
+          </div>
+          <div class="hero-stat">
+            <span>观察节奏</span>
+            <strong>支付 / 续费 / Cron</strong>
+            <small>把账单波动、续费窗口与提醒任务历史放在同一视野里交叉判断。</small>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6" id="statsGrid">
+    <div class="stats-grid" id="statsGrid">
       <div class="loading-skeleton"></div>
       <div class="loading-skeleton"></div>
       <div class="loading-skeleton"></div>
@@ -411,31 +1002,31 @@
               ? status.configuredHours.join(', ')
               : '全部时段';
             const sentBadge = status.sent
-              ? '<span class="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-700">本次有发送</span>'
-              : '<span class="px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-700">本次未发送</span>';
+              ? '<span class="scheduler-badge sent"><i class="fas fa-check-circle"></i>本次有发送</span>'
+              : '<span class="scheduler-badge idle"><i class="fas fa-minus-circle"></i>本次未发送</span>';
 
             schedulerStatusEl.innerHTML = `
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div class="bg-gray-50 rounded-md p-3">
-                  <div class="text-gray-500">最近执行时间</div>
-                  <div class="text-gray-900 font-medium mt-1">${runAt}</div>
+              <div class="scheduler-grid text-sm">
+                <div class="scheduler-unit">
+                  <div class="scheduler-label">最近执行时间</div>
+                  <div class="scheduler-value">${runAt}</div>
                 </div>
-                <div class="bg-gray-50 rounded-md p-3">
-                  <div class="text-gray-500">状态</div>
-                  <div class="mt-1">${sentBadge}</div>
+                <div class="scheduler-unit">
+                  <div class="scheduler-label">状态</div>
+                  <div class="scheduler-value">${sentBadge}</div>
                 </div>
-                <div class="bg-gray-50 rounded-md p-3">
-                  <div class="text-gray-500">当前小时 / 配置时段（UTC）</div>
-                  <div class="text-gray-900 font-medium mt-1">${status.currentHour || '--'} / ${configuredHours}</div>
+                <div class="scheduler-unit">
+                  <div class="scheduler-label">当前小时 / 配置时段（UTC）</div>
+                  <div class="scheduler-value">${status.currentHour || '--'} / ${configuredHours}</div>
                 </div>
-                <div class="bg-gray-50 rounded-md p-3">
-                  <div class="text-gray-500">检查与命中</div>
-                  <div class="text-gray-900 font-medium mt-1">检查 ${status.checkedSubscriptions || 0} 条，命中 ${status.expiringMatched || 0} 条</div>
+                <div class="scheduler-unit">
+                  <div class="scheduler-label">检查与命中</div>
+                  <div class="scheduler-value">检查 ${status.checkedSubscriptions || 0} 条，命中 ${status.expiringMatched || 0} 条</div>
                 </div>
-                <div class="bg-gray-50 rounded-md p-3 md:col-span-2">
-                  <div class="text-gray-500">发送结果</div>
-                  <div class="text-gray-900 font-medium mt-1">尝试 ${sendResult.attempted || 0} 个渠道，成功 ${sendResult.successCount || 0}，失败 ${sendResult.failedCount || 0}，去重跳过 ${status.dedupeSkipped || 0}</div>
-                  <div class="text-xs text-gray-500 mt-1">${status.reason || '暂无详情'}</div>
+                <div class="scheduler-unit scheduler-unit-wide">
+                  <div class="scheduler-label">发送结果</div>
+                  <div class="scheduler-value">尝试 ${sendResult.attempted || 0} 个渠道，成功 ${sendResult.successCount || 0}，失败 ${sendResult.failedCount || 0}，去重跳过 ${status.dedupeSkipped || 0}</div>
+                  <div class="scheduler-detail">${status.reason || '暂无详情'}</div>
                 </div>
               </div>
             `;
@@ -452,31 +1043,56 @@
               const when = item.lastRunAt ? new Date(item.lastRunAt).toLocaleString('zh-CN') : '未知时间';
               const sent = item.sent ? '已发送' : '未发送';
               const reason = item.reason || '-';
-              return `<div class="py-2 border-b border-gray-100 last:border-b-0 text-sm"><div class="font-medium text-gray-800">${when} · ${sent}</div><div class="text-xs text-gray-500 mt-1">${reason}</div></div>`;
+              return `<div class="scheduler-history-item"><div class="scheduler-history-title">${when} · ${sent}</div><div class="scheduler-history-detail">${reason}</div></div>`;
             }).join('');
           }
         }
 
         document.getElementById('statsGrid').innerHTML=`
-          <div class="stat-card">
-            <div class="stat-card-header">月度支出 (CNY)</div>
-            <div class="stat-card-value">¥${data.monthlyExpense.amount.toFixed(2)}</div>
-            <div class="stat-card-subtitle">本月折合支出</div>
-            <div class="stat-card-trend ${data.monthlyExpense.trendDirection}">
-              <i class="fas fa-arrow-${data.monthlyExpense.trendDirection==='up'?'up':data.monthlyExpense.trendDirection==='down'?'down':'right'}"></i>
-              ${data.monthlyExpense.trend}%
+          <div class="stat-card metric-card card-hover animate-in">
+            <div class="metric-card-header">
+              <div>
+                <div class="stat-card-header">Monthly Burn</div>
+                <div class="stat-card-value">¥${data.monthlyExpense.amount.toFixed(2)}</div>
+                <div class="stat-card-subtitle">本月折合支出</div>
+              </div>
+              <div class="metric-card-icon"><i class="fas fa-yen-sign"></i></div>
+            </div>
+            <div class="metric-card-footer">
+              <span>支出波动</span>
+              <div class="stat-card-trend ${data.monthlyExpense.trendDirection}">
+                <i class="fas fa-arrow-${data.monthlyExpense.trendDirection==='up'?'up':data.monthlyExpense.trendDirection==='down'?'down':'right'}"></i>
+                ${data.monthlyExpense.trend}%
+              </div>
             </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-card-header">年度支出 (CNY)</div>
-            <div class="stat-card-value">¥${data.yearlyExpense.amount.toFixed(2)}</div>
-            <div class="stat-card-subtitle">月均支出: ¥${data.yearlyExpense.monthlyAverage.toFixed(2)}</div>
+          <div class="stat-card metric-card card-hover animate-in">
+            <div class="metric-card-header">
+              <div>
+                <div class="stat-card-header">Annual Exposure</div>
+                <div class="stat-card-value">¥${data.yearlyExpense.amount.toFixed(2)}</div>
+                <div class="stat-card-subtitle">累计年度折合支出</div>
+              </div>
+              <div class="metric-card-icon"><i class="fas fa-layer-group"></i></div>
+            </div>
+            <div class="metric-card-footer">
+              <span>月均成本</span>
+              <strong>¥${data.yearlyExpense.monthlyAverage.toFixed(2)}</strong>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-card-header">活跃订阅</div>
-            <div class="stat-card-value">${data.activeSubscriptions.active}</div>
-            <div class="stat-card-subtitle">总订阅数: ${data.activeSubscriptions.total}</div>
-            ${data.activeSubscriptions.expiringSoon>0?`<div class="stat-card-trend down"><i class="fas fa-exclamation-circle"></i>${data.activeSubscriptions.expiringSoon} 即将到期</div>`:''}
+          <div class="stat-card metric-card card-hover animate-in">
+            <div class="metric-card-header">
+              <div>
+                <div class="stat-card-header">Live Services</div>
+                <div class="stat-card-value">${data.activeSubscriptions.active}</div>
+                <div class="stat-card-subtitle">总订阅数 ${data.activeSubscriptions.total}</div>
+              </div>
+              <div class="metric-card-icon"><i class="fas fa-broadcast-tower"></i></div>
+            </div>
+            <div class="metric-card-footer">
+              <span>风险窗口</span>
+              ${data.activeSubscriptions.expiringSoon>0?`<div class="stat-card-trend down"><i class="fas fa-exclamation-circle"></i>${data.activeSubscriptions.expiringSoon} 即将到期</div>`:'<div class="stat-card-trend up"><i class="fas fa-check-circle"></i>状态稳定</div>'}
+            </div>
           </div>
         `;
         
@@ -572,19 +1188,19 @@
         return;
       }
       const sorted = [...items].sort((a, b) => b.amountCNY - a.amountCNY);
-      el.innerHTML = `
-        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
-          <div style="flex-shrink:0;text-align:center;min-width:140px">
-            <div class="period-amount" style="font-size:1.75rem">¥${total.toFixed(2)}</div>
-            <div class="period-subtitle">月均合计</div>
-            <div class="period-subtitle" style="margin-top:0.25rem">共 ${sorted.length} 项生效订阅</div>
+        el.innerHTML = `
+          <div class="breakdown-layout">
+            <div class="breakdown-total">
+              <div class="period-amount">¥${total.toFixed(2)}</div>
+              <div class="period-subtitle">月均合计</div>
+              <div class="period-subtitle" style="margin-top:0.25rem">共 ${sorted.length} 项生效订阅</div>
+            </div>
+            <div class="breakdown-chart">
+              <canvas id="subsPieChart"></canvas>
+            </div>
+            <div class="breakdown-legend" id="subsLegend"></div>
           </div>
-          <div style="flex:1;min-width:200px;max-width:280px;margin:0 auto">
-            <canvas id="subsPieChart"></canvas>
-          </div>
-          <div style="flex:1;min-width:200px" id="subsLegend"></div>
-        </div>
-      `;
+        `;
       const ctx = document.getElementById('subsPieChart').getContext('2d');
       if (subsPieChart) subsPieChart.destroy();
       subsPieChart = new Chart(ctx, {
