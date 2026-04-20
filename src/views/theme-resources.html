@@ -790,7 +790,14 @@
     background: rgba(255, 255, 255, 0.04) !important;
     border-color: var(--dark-border) !important;
     color: var(--dark-text-main) !important;
+    color-scheme: dark;
     box-shadow: none;
+  }
+
+  html.dark select option,
+  html.dark select optgroup {
+    background: #0f172a !important;
+    color: var(--dark-text-main) !important;
   }
 
   html.dark input:hover,

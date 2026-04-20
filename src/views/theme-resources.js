@@ -26,6 +26,11 @@ const themeResources = `
     background-color: #374151 !important;
     border-color: #4b5563 !important;
     color: white !important;
+    color-scheme: dark;
+  }
+  html.dark select option, html.dark select optgroup {
+    background-color: #0f172a !important;
+    color: var(--dark-text-main) !important;
   }
   html.dark input::placeholder, html.dark textarea::placeholder { color: #9ca3af; }
   html.dark input:focus, html.dark select:focus, html.dark textarea:focus {
