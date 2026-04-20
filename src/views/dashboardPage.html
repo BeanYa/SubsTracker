@@ -1197,7 +1197,7 @@
       <div class="panel-header">
         <div class="panel-title">
           <i class="fas fa-stream icon-indigo"></i>
-          <h3 class="text-lg font-medium text-gray-900">自动提醒任务历史（最近10次）</h3>
+          <h3 class="text-lg font-medium text-gray-900">自动提醒任务历史（最近5次）</h3>
         </div>
       </div>
       <div class="p-6" id="schedulerStatusHistory">
@@ -1366,7 +1366,7 @@
           if (schedulerHistory.length === 0) {
             schedulerHistoryEl.innerHTML = '<div class="text-sm text-gray-500">暂无历史记录</div>';
           } else {
-            schedulerHistoryEl.innerHTML = schedulerHistory.slice(0, 10).map(item => {
+            schedulerHistoryEl.innerHTML = schedulerHistory.slice(0, 5).map(item => {
               const when = item.lastRunAt ? new Date(item.lastRunAt).toLocaleString('zh-CN') : '未知时间';
               const sent = item.sent ? '已发送' : '未发送';
               const reason = item.reason || '-';
