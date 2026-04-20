@@ -23,6 +23,15 @@ export default {
       return handleApiRequest(request, env);
     } else if (url.pathname.startsWith('/admin')) {
       return handleAdminRequest(request, env, ctx);
+    } else if (url.pathname === '/') {
+      const { user } = await getUserFromRequest(request, env);
+      if (user) {
+        return new Response('', {
+          status: 302,
+          headers: { 'Location': '/admin/dashboard' }
+        });
+      }
+      return handleLoginPage();
     } else {
       return handleLoginPage();
     }

@@ -472,7 +472,7 @@
           <a href="/admin/dashboard" class="shell-link">
             <i class="fas fa-chart-line"></i>首页
           </a>
-          <a href="/admin" class="shell-link">
+          <a href="/admin/subscriptions" class="shell-link">
             <i class="fas fa-list"></i>订阅列表
           </a>
           <a href="/admin/config" class="shell-link shell-link-active">
@@ -497,7 +497,7 @@
         <a href="/admin/dashboard" class="shell-mobile-link">
           <i class="fas fa-chart-line w-6 text-center mr-2"></i>首页
         </a>
-        <a href="/admin" class="shell-mobile-link">
+        <a href="/admin/subscriptions" class="shell-mobile-link">
           <i class="fas fa-list w-6 text-center mr-2"></i>订阅列表
         </a>
         <a href="/admin/config" class="shell-mobile-link shell-mobile-link-active">
@@ -1282,7 +1282,7 @@
           localStorage.setItem('timezoneUpdated', Date.now().toString());
           
           // 如果当前在订阅列表页面，则自动刷新页面以更新时区显示
-          if (window.location.pathname === '/admin') {
+          if (window.location.pathname === '/admin/subscriptions') {
             window.location.reload();
           }
         } else {

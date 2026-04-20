@@ -32,14 +32,28 @@ async function handleAdminRequest(request, env) {
       });
     }
 
+    if (pathname === '/admin') {
+      return new Response('', {
+        status: 302,
+        headers: { 'Location': '/admin/dashboard' }
+      });
+    }
+
     if (pathname === '/admin/dashboard') {
       return new Response(dashboardPage(), {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
 
-    return new Response(adminPage, {
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
+    if (pathname === '/admin/subscriptions') {
+      return new Response(adminPage, {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
+      });
+    }
+
+    return new Response('', {
+      status: 302,
+      headers: { 'Location': '/admin/dashboard' }
     });
   } catch (error) {
     console.error('[管理页面] 处理请求时出错:', error);
